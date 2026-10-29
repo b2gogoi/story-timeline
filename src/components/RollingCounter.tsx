@@ -126,7 +126,7 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
                         ? 'text-[#c51f25] [text-shadow:0_1px_0_rgba(255,190,190,0.45),0_-1px_0_rgba(70,0,0,0.55)]'
                         : 'text-[#101214] [text-shadow:0_1px_0_rgba(255,255,255,0.58),0_-1px_0_rgba(0,0,0,0.34)]'
                       return (
-                        <span key={n} className={`flex shrink-0 items-center justify-center font-mono text-[14.2cqw] font-bold leading-none tabular-nums ${color}`} style={{ height: `${DIGIT_HEIGHT}cqw` }}>
+                        <span key={n} className={`flex shrink-0 items-center justify-center font-sans text-[14.2cqw] font-bold leading-none tabular-nums ${color}`} style={{ height: `${DIGIT_HEIGHT}cqw` }}>
                           {digit}
                         </span>
                       )
