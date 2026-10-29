@@ -15,6 +15,8 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
   const spread = () => {
     const a = toDay(cfg.start), b = toDay(cfg.end)
     const imageEnd = cfg.storyImages[cfg.storyImages.length - 1] ?? ''
+    const cityStart = cfg.storyCities[0] ?? ''
+    const cityEnd = cfg.storyCities[cfg.storyCities.length - 1] ?? ''
     set({
       stops: Array.from({ length: evenN }, (_, k) =>
         toISO(Math.round(a + ((b - a) * (k + 1)) / (evenN + 1))),
@@ -31,6 +33,9 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
         if (k === evenN + 1) return imageEnd
         return `https://picsum.photos/seed/story-timeline-stop-${k}/1080/1200`
       }),
+      storyCities: Array.from({ length: evenN + 2 }, (_, k) =>
+        k === 0 ? cityStart : k === evenN + 1 ? cityEnd : '',
+      ),
     })
   }
 
@@ -40,6 +45,8 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
     const lastStop = values[values.length - 2] ?? values[0] ?? 0
     const end = values[values.length - 1] ?? 0
     const endImage = images[images.length - 1] ?? ''
+    const cities = cfg.storyCities
+    const endCity = cities[cities.length - 1] ?? ''
 
     set({
       stops: [...cfg.stops, cfg.end],
@@ -49,6 +56,7 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
         `https://picsum.photos/seed/story-timeline-stop-${cfg.stops.length + 1}/1080/1200`,
         endImage,
       ],
+      storyCities: [...cities.slice(0, -1), '', endCity],
     })
   }
 
@@ -85,6 +93,7 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
                       stops: cfg.stops.filter((_, k) => k !== i),
                       rollingValues: cfg.rollingValues.filter((_, k) => k !== i + 1),
                       storyImages: cfg.storyImages.filter((_, k) => k !== i + 1),
+                      storyCities: cfg.storyCities.filter((_, k) => k !== i + 1),
                     })
                   }
                 >
