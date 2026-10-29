@@ -1,9 +1,55 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useFrame } from '../lib/clock'
 import { type ControlProps, type ViewProps } from '../lib/timeline'
 import { Group, Row, input } from './ui'
 
 const DIGIT_HEIGHT = 11 // cqw; keep in sync with the drum and ribbon row heights
+let soundEnabled = true
+let audioContext: AudioContext | null = null
+let lastSoundTime = 0
+
+function unlockAudio() {
+  if (!audioContext) audioContext = new AudioContext()
+  if (audioContext.state === 'suspended') void audioContext.resume()
+}
+
+function playMechanicalTick() {
+  const context = audioContext
+  if (!soundEnabled || !context || context.state !== 'running') return
+  const now = context.currentTime
+  if (now - lastSoundTime < 0.025) return
+  lastSoundTime = now
+
+  const length = Math.floor(context.sampleRate * 0.012)
+  const buffer = context.createBuffer(1, length, context.sampleRate)
+  const samples = buffer.getChannelData(0)
+  for (let i = 0; i < length; i++) samples[i] = (Math.random() * 2 - 1) * Math.exp(-i / (length * 0.28))
+
+  const noise = context.createBufferSource()
+  noise.buffer = buffer
+  const filter = context.createBiquadFilter()
+  filter.type = 'bandpass'
+  filter.frequency.setValueAtTime(1700 + Math.random() * 500, now)
+  filter.Q.setValueAtTime(2.8, now)
+  const noiseGain = context.createGain()
+  noiseGain.gain.setValueAtTime(0.16, now)
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.014)
+  noise.connect(filter).connect(noiseGain).connect(context.destination)
+
+  const thump = context.createOscillator()
+  thump.type = 'triangle'
+  thump.frequency.setValueAtTime(125, now)
+  thump.frequency.exponentialRampToValueAtTime(48, now + 0.022)
+  const thumpGain = context.createGain()
+  thumpGain.gain.setValueAtTime(0.12, now)
+  thumpGain.gain.exponentialRampToValueAtTime(0.001, now + 0.024)
+  thump.connect(thumpGain).connect(context.destination)
+
+  noise.start(now)
+  noise.stop(now + 0.015)
+  thump.start(now)
+  thump.stop(now + 0.026)
+}
 
 function valueAt(day: number, points: number[], values: number[]) {
   if (points.length < 2) return values[0] ?? 0
@@ -21,16 +67,33 @@ function valueAt(day: number, points: number[], values: number[]) {
 
 export function RollingCounter({ cfg, plan }: ViewProps) {
   const ribbons = useRef<Array<HTMLSpanElement | null>>([])
+  const previousInteger = useRef<number | null>(null)
+
+  useEffect(() => {
+    const unlock = () => {
+      unlockAudio()
+      window.removeEventListener('pointerdown', unlock)
+      window.removeEventListener('keydown', unlock)
+    }
+    window.addEventListener('pointerdown', unlock)
+    window.addEventListener('keydown', unlock)
+    return () => {
+      window.removeEventListener('pointerdown', unlock)
+      window.removeEventListener('keydown', unlock)
+    }
+  }, [])
 
   useFrame(({ day }) => {
     const value = Math.max(0, Math.min(9999, valueAt(day, plan.points, cfg.rollingValues)))
+    const integer = Math.floor(value)
+    if (previousInteger.current !== null && integer !== previousInteger.current) playMechanicalTick()
+    previousInteger.current = integer
 
     // The units wheel turns continuously; each higher wheel engages only as
     // the wheel to its right passes through 9 into 0.
     for (let index = 3; index >= 0; index--) {
       const place = 10 ** (3 - index)
       let digitWithFraction: number
-
       if (index === 3) {
         digitWithFraction = value % 10
       } else {
@@ -76,6 +139,7 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
 }
 
 function RollingCounterControls({ cfg, set }: ControlProps) {
+  const [sound, setSound] = useState(soundEnabled)
   const update = (index: number, raw: string) => {
     const values = [...cfg.rollingValues]
     values[index] = Math.max(0, Math.min(9999, Math.floor(Number(raw) || 0)))
@@ -93,6 +157,10 @@ function RollingCounterControls({ cfg, set }: ControlProps) {
       {field('Start', 0)}
       {cfg.stops.map((_, i) => field(`Stop ${i + 1}`, i + 1))}
       {field('End', cfg.stops.length + 1)}
+      <label className="flex items-center gap-2 text-sm text-white/80">
+        <input type="checkbox" className="accent-cyan-400" checked={sound} onChange={e => { soundEnabled = e.target.checked; setSound(e.target.checked) }} />
+        Mechanical tick sound
+      </label>
     </Group>
   )
 }
