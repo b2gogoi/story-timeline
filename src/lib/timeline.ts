@@ -33,10 +33,14 @@ export type Config = {
   rollingValues: number[] // values at start, each stop, and end (0000–9999)
 }
 
-type Seg = { from: number; to: number; move: number; hold: number }
+type Seg = { from: number; to: number; move: number; hold: number; power: number }
 export const easeOut = (p: number, n: number) => 1 - Math.pow(1 - p, n)
 export const moveDuration = (dist: number, speed: number, power: number) =>
   Math.max(0.35, (dist * power) / (speed * DAYS_PER_MONTH))
+
+/** Give the final timeline stop a longer braking ease across all synchronized layers. */
+export const easePowerForStop = (power: number, stopIndex: number, lastStopIndex: number) =>
+  stopIndex === lastStopIndex ? power * 1.5 : power
 
 export type Plan = {
   points: number[]; lead: number; segs: Seg[]; total: number
@@ -51,8 +55,9 @@ export function buildPlan(points: number[], c: Pick<Config, 'speed' | 'easePower
   let t = c.dwell
   for (let i = 0; i < points.length - 1; i++) {
     const dist = Math.abs(points[i + 1] - points[i])
-    const move = moveDuration(dist, c.speed, c.easePower)
-    segs.push({ from: points[i], to: points[i + 1], move, hold: c.dwell })
+    const power = easePowerForStop(c.easePower, i + 1, points.length - 1)
+    const move = moveDuration(dist, c.speed, power)
+    segs.push({ from: points[i], to: points[i + 1], move, hold: c.dwell, power })
     t += move
     arrive.push(t)
     t += c.dwell
@@ -65,7 +70,7 @@ export function positionAt(plan: Plan, time: number): number {
   if (x < plan.lead) return plan.points[0]
   x -= plan.lead
   for (const s of plan.segs) {
-    if (x < s.move) return s.from + (s.to - s.from) * (1 - Math.pow(1 - x / s.move, plan.power))
+    if (x < s.move) return s.from + (s.to - s.from) * easeOut(x / s.move, s.power)
     x -= s.move
     if (x < s.hold) return s.to
     x -= s.hold
