@@ -32,19 +32,24 @@ export function StoryImages({ cfg, plan }: ViewProps) {
   })
 
   return (
-    <div className="pointer-events-none absolute left-1/2 top-[56cqw] bottom-0 w-[78.9cqw] -translate-x-1/2 z-0 overflow-hidden bg-black/20" aria-label="Timeline story images">
-      {cfg.storyImages.map((url, index) => (
-        <img
-          key={index}
-          ref={node => { images.current[index] = node }}
-          src={url || undefined}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{ opacity: 0 }}
-          decoding="async"
-        />
-      ))}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20" />
+    <div
+      className="pointer-events-none absolute left-[15cqw] top-[62cqw] bottom-[9cqw] z-0 w-[70cqw] rotate-[5deg] origin-top-right rounded-[0.8cqw] border-[1.2cqw] border-[#e8e0ce] bg-[#e8e0ce] p-[0.9cqw] shadow-[0_2cqw_4cqw_rgba(0,0,0,0.65),inset_0_0.2cqw_0.3cqw_rgba(255,255,255,0.75),inset_0_-0.35cqw_0.6cqw_rgba(0,0,0,0.25)]"
+      aria-label="Timeline story images"
+    >
+      <div className="relative h-full w-full overflow-hidden rounded-[0.35cqw] bg-black/20">
+        {cfg.storyImages.map((url, index) => (
+          <img
+            key={index}
+            ref={node => { images.current[index] = node }}
+            src={url || undefined}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{ opacity: 0 }}
+            decoding="async"
+          />
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20" />
+      </div>
     </div>
   )
 }
