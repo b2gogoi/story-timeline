@@ -56,7 +56,12 @@ function valueAt(day: number, points: number[], values: number[]) {
   for (let i = 0; i < points.length - 1; i++) {
     const from = points[i], to = points[i + 1]
     if (day >= Math.min(from, to) && day <= Math.max(from, to)) {
-      const progress = from === to ? 1 : Math.max(0, Math.min(1, (day - from) / (to - from)))
+      const rawProgress = from === to ? 1 : Math.max(0, Math.min(1, (day - from) / (to - from)))
+      // Add a final brake to the last counter leg so the drums settle into the end value.
+      const brakeStart = 0.78
+      const progress = i === points.length - 2 && rawProgress > brakeStart
+        ? brakeStart + (1 - brakeStart) * (1 - Math.pow(1 - (rawProgress - brakeStart) / (1 - brakeStart), 3))
+        : rawProgress
       const start = values[i] ?? 0
       const end = values[i + 1] ?? start
       return start + (end - start) * progress
