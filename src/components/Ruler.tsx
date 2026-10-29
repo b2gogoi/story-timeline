@@ -46,7 +46,7 @@ export function RulerView({ cfg, plan }: ViewProps) {
       <div ref={layer} className="absolute right-0 w-[10cqw] will-change-transform" style={{ top: '50%', height: `${(count * 100) / N}%` }}>
         {ticks}
       </div>
-      <div className="absolute inset-x-0 top-[56cqw] flex -translate-y-1/2 items-center pl-[65cqw] pr-0">
+      <div className="absolute inset-x-0 top-[56cqw] flex -translate-y-1/2 items-center pl-[40cqw] pr-0">
         <span ref={label} className="mr-[2.4cqw] whitespace-nowrap font-mono text-[2.6cqw] tracking-[0.22em]" />
         <span className="h-px flex-1" style={{ background: 'currentColor' }} />
       </div>
