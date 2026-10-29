@@ -14,6 +14,7 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
   const setStop = (i: number, v: string) => set({ stops: cfg.stops.map((s, k) => (k === i ? v : s)) })
   const spread = () => {
     const a = toDay(cfg.start), b = toDay(cfg.end)
+    const imageEnd = cfg.storyImages[cfg.storyImages.length - 1] ?? ''
     set({
       stops: Array.from({ length: evenN }, (_, k) =>
         toISO(Math.round(a + ((b - a) * (k + 1)) / (evenN + 1))),
@@ -25,17 +26,29 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
               (evenN + 1),
         ),
       ),
+      storyImages: Array.from({ length: evenN + 2 }, (_, k) => {
+        if (k === 0) return cfg.storyImages[0] ?? ''
+        if (k === evenN + 1) return imageEnd
+        return `https://picsum.photos/seed/story-timeline-stop-${k}/1080/1200`
+      }),
     })
   }
 
   const addStop = () => {
     const values = cfg.rollingValues
+    const images = cfg.storyImages
     const lastStop = values[values.length - 2] ?? values[0] ?? 0
     const end = values[values.length - 1] ?? 0
+    const endImage = images[images.length - 1] ?? ''
 
     set({
       stops: [...cfg.stops, cfg.end],
       rollingValues: [...values.slice(0, -1), Math.round((lastStop + end) / 2), end],
+      storyImages: [
+        ...images.slice(0, -1),
+        `https://picsum.photos/seed/story-timeline-stop-${cfg.stops.length + 1}/1080/1200`,
+        endImage,
+      ],
     })
   }
 
@@ -71,6 +84,7 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
                     set({
                       stops: cfg.stops.filter((_, k) => k !== i),
                       rollingValues: cfg.rollingValues.filter((_, k) => k !== i + 1),
+                      storyImages: cfg.storyImages.filter((_, k) => k !== i + 1),
                     })
                   }
                 >
