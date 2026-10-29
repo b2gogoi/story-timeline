@@ -97,7 +97,7 @@ export function MastersDial({ cfg }: { cfg: Config }) {
               >
                 <span
                 //   className="whitespace-nowrap font-mono text-[6.5cqw] font-medium"
-                  className="whitespace-nowrap font-mono text-[5.2cqw] font-medium"
+                  className="whitespace-nowrap font-mono text-[5.8cqw] font-medium"
                   style={{
                     transform: 'scaleX(cos(var(--ang)))',
                     opacity: `max(0.45, calc(1 - abs(${i} - var(--q))))`,
