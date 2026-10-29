@@ -141,6 +141,7 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
               </Fragment>
             ))}
             <div className="pointer-events-none absolute inset-0 z-10 rounded-[0.6cqw] bg-[linear-gradient(to_bottom,rgba(0,0,0,0.58)_0%,rgba(0,0,0,0.24)_12%,rgba(255,255,255,0.25)_23%,transparent_38%,transparent_62%,rgba(0,0,0,0.28)_84%,rgba(0,0,0,0.65)_100%)]" />
+          </div>
         </div>
       </div>
     </div>
