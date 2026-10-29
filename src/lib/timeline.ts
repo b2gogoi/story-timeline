@@ -1,3 +1,8 @@
+export type ComponentId = 'ruler' | 'counter' | 'dial'
+
+export type ViewProps = { cfg: Config; plan: Plan }
+export type ControlProps = { cfg: Config; set: (p: Partial<Config>) => void }
+
 const DAY = 86400000
 export const DAYS_PER_MONTH = 30.4375
 
@@ -22,25 +27,36 @@ export type Config = {
   monthsVisible: number
   loop: boolean
   start: string; end: string; stops: string[]  // "YYYY-MM"
+  dob: string // "YYYY-MM"
+  show: Record<ComponentId, boolean>
+  mode: 'auto' | 'manual'
 }
 
-// export const toIdx = (ym: string) => { const [y, m] = ym.split('-').map(Number); return y * 12 + (m - 1) }
-// export const toYM = (i: number) => `${Math.floor(i / 12)}-${String((((i % 12) + 12) % 12) + 1).padStart(2, '0')}`
-// export const labelOf = (i: number) => `${MONTHS[((i % 12) + 12) % 12]} ${Math.floor(i / 12)}`
-
 type Seg = { from: number; to: number; move: number; hold: number }
-export type Plan = { points: number[]; lead: number; segs: Seg[]; total: number; loop: boolean; power: number }
+export const easeOut = (p: number, n: number) => 1 - Math.pow(1 - p, n)
+export const moveDuration = (dist: number, speed: number, power: number) =>
+  Math.max(0.35, (dist * power) / (speed * DAYS_PER_MONTH))
+
+export type Plan = {
+  points: number[]; lead: number; segs: Seg[]; total: number
+  loop: boolean; power: number; speed: number
+  arrive: number[]   // plan time at which each stop is reached
+}
 
 /** Timeline: hold at first stop, then for each leg move (fast start, eased stop) and hold. */
 export function buildPlan(points: number[], c: Pick<Config, 'speed' | 'easePower' | 'dwell' | 'loop'>): Plan {
   const segs: Seg[] = []
+  const arrive = [0]
+  let t = c.dwell
   for (let i = 0; i < points.length - 1; i++) {
-    const dist = Math.abs(points[i + 1] - points[i])  // now in days
-    // Speed slider is months/sec, so convert to days/sec before dividing.
-    segs.push({ from: points[i], to: points[i + 1], move: Math.max(0.35, (dist * c.easePower) / (c.speed * DAYS_PER_MONTH)), hold: c.dwell })
+    const dist = Math.abs(points[i + 1] - points[i])
+    const move = moveDuration(dist, c.speed, c.easePower)
+    segs.push({ from: points[i], to: points[i + 1], move, hold: c.dwell })
+    t += move
+    arrive.push(t)
+    t += c.dwell
   }
-  const total = c.dwell + segs.reduce((s, g) => s + g.move + g.hold, 0)
-  return { points, lead: c.dwell, segs, total, loop: c.loop, power: c.easePower }
+  return { points, lead: c.dwell, segs, total: t, loop: c.loop, power: c.easePower, speed: c.speed, arrive }
 }
 
 export function positionAt(plan: Plan, time: number): number {
