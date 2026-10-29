@@ -109,7 +109,7 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
   })
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-[27cqw] z-10 flex justify-center" aria-label="Rolling counter">
+    <div className="pointer-events-none absolute inset-x-0 top-[22cqw] z-10 flex justify-center" aria-label="Rolling counter">
       <div className="relative rounded-[2.2cqw] border border-white/20 bg-gradient-to-b from-[#303438] via-[#171a1d] to-[#070809] p-[2.4cqw] shadow-[0_3cqw_5cqw_rgba(0,0,0,0.8),inset_0_0.6cqw_0.8cqw_rgba(255,255,255,0.16),inset_0_-1cqw_1.2cqw_rgba(0,0,0,0.95)]">
         <div className="rounded-[1cqw] border border-black bg-[#030405] p-[0.9cqw] shadow-[inset_0_1cqw_1.6cqw_rgba(0,0,0,0.95),0_0.35cqw_0.6cqw_rgba(255,255,255,0.16)]">
           <div className="relative flex items-center gap-[0.7cqw] overflow-hidden rounded-[0.6cqw] bg-[#030405]">

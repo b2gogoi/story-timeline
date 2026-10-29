@@ -8,8 +8,8 @@ import { type Config, buildPlan, toDay } from './lib/timeline'
 import { StepControls } from './components/StepControls'
 
 const initial: Config = {
-  bgFrom: '#073738', bgTo: '#347d73', bgSplit: 25, fontColor: '#e6f4f7',
-  speed: 18, easePower: 3, dwell: 1.2, direction: 'up', monthsVisible: 30, loop: true,
+  bgFrom: '#414949', bgTo: '#0e1010', bgSplit: 25, fontColor: '#e6f4f7',
+  speed: 14, easePower: 3, dwell: 1, direction: 'up', monthsVisible: 30, loop: true,
   start: '2019-10-12', end: '2026-10-06',
   stops: ['2019-12-07', '2021-11-28', '2022-11-26', '2024-10-05', '2025-11-23', '2026-08-29'],
   dob: '1982-09-24',
