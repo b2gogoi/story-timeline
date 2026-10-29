@@ -15,7 +15,17 @@ const initial: Config = {
   dob: '1982-09-24',
   mode: 'auto',
   rollingValues: [4663, 4242, 4072, 4029, 4019, 3760, 3721, 3660],
-  show: { ruler: true, counter: true, dial: true, rolling: true },
+  storyImages: [
+    'https://picsum.photos/seed/story-timeline-start/1080/1200',
+    'https://picsum.photos/seed/story-timeline-stop-1/1080/1200',
+    'https://picsum.photos/seed/story-timeline-stop-2/1080/1200',
+    'https://picsum.photos/seed/story-timeline-stop-3/1080/1200',
+    'https://picsum.photos/seed/story-timeline-stop-4/1080/1200',
+    'https://picsum.photos/seed/story-timeline-stop-5/1080/1200',
+    'https://picsum.photos/seed/story-timeline-stop-6/1080/1200',
+    'https://picsum.photos/seed/story-timeline-end/1080/1200',
+  ],
+  show: { ruler: true, counter: true, dial: true, rolling: true, images: true },
 }
 
 export default function App() {
