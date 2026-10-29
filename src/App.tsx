@@ -25,6 +25,7 @@ const initial: Config = {
     'https://picsum.photos/seed/story-timeline-stop-6/1080/1200',
     'https://picsum.photos/seed/story-timeline-end/1080/1200',
   ],
+  storyCities: ['', '', '', '', '', '', '', ''],
   show: { ruler: true, counter: true, dial: true, rolling: true, images: true },
 }
 
