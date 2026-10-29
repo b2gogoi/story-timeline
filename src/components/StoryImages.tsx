@@ -32,7 +32,7 @@ export function StoryImages({ cfg, plan }: ViewProps) {
   })
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-[56cqw] bottom-0 z-0 overflow-hidden bg-black/20" aria-label="Timeline story images">
+    <div className="pointer-events-none absolute left-1/2 top-[56cqw] bottom-0 w-[78.9cqw] -translate-x-1/2 z-0 overflow-hidden bg-black/20" aria-label="Timeline story images">
       {cfg.storyImages.map((url, index) => (
         <img
           key={index}
