@@ -33,7 +33,7 @@ export function StoryImages({ cfg, plan }: ViewProps) {
 
   return (
     <div
-      className="pointer-events-none absolute left-[15cqw] top-[62cqw] bottom-[9cqw] z-0 w-[70cqw]"
+      className="pointer-events-none absolute left-[12cqw] top-[62cqw] bottom-[9cqw] z-0 w-[70cqw]"
       aria-label="Timeline story photo stack"
     >
       {cfg.storyImages.map((url, index) => {
