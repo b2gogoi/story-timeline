@@ -18,7 +18,7 @@ function imageBlend(day: number, points: number[]) {
 }
 
 export function StoryImages({ cfg, plan }: ViewProps) {
-  const images = useRef<Array<HTMLImageElement | null>>([])
+  const images = useRef<Array<HTMLDivElement | null>>([])
 
   useFrame(({ day }) => {
     const blend = imageBlend(day, plan.points)
@@ -42,6 +42,7 @@ export function StoryImages({ cfg, plan }: ViewProps) {
         return (
           <div
             key={index}
+            ref={node => { images.current[index] = node }}
             className="absolute inset-0 rounded-[0.8cqw] border-[1.2cqw] border-[#e8e0ce] bg-[#e8e0ce] p-[0.9cqw] shadow-[0_2cqw_4cqw_rgba(0,0,0,0.65),inset_0_0.2cqw_0.3cqw_rgba(255,255,255,0.75),inset_0_-0.35cqw_0.6cqw_rgba(0,0,0,0.25)]"
             style={{
               zIndex: index,
@@ -51,11 +52,10 @@ export function StoryImages({ cfg, plan }: ViewProps) {
           >
             <div className="relative h-full w-full overflow-hidden rounded-[0.35cqw] bg-black/20">
               <img
-                ref={node => { images.current[index] = node }}
                 src={url || undefined}
                 alt=""
                 className="absolute inset-0 h-full w-full object-cover"
-                style={{ opacity: 0 }}
+                style={{ opacity: 1 }}
                 decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20" />
@@ -87,7 +87,7 @@ function StoryImagesControls({ cfg, set }: ControlProps) {
 
   return (
     <Group title="Image URLs">
-      <p className="text-xs text-white/50">Add an image URL for the start, each stop, and the end. Each image is added as a tilted photo layer as the shared timeline advances.</p>
+      <p className="text-xs text-white/50">Add an image URL for the start, each stop, and the end. </p>
       {field('Start', 0)}
       {cfg.stops.map((_, index) => field(`Stop ${index + 1}`, index + 1))}
       {field('End', cfg.stops.length + 1)}
