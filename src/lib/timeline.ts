@@ -1,4 +1,4 @@
-export type ComponentId = 'ruler' | 'counter' | 'dial'
+export type ComponentId = 'ruler' | 'counter' | 'dial' | 'rolling'
 
 export type ViewProps = { cfg: Config; plan: Plan }
 export type ControlProps = { cfg: Config; set: (p: Partial<Config>) => void }
@@ -30,6 +30,7 @@ export type Config = {
   dob: string // "YYYY-MM"
   show: Record<ComponentId, boolean>
   mode: 'auto' | 'manual'
+  rollingValues: number[] // values at start, each stop, and end (0000–9999)
 }
 
 type Seg = { from: number; to: number; move: number; hold: number }

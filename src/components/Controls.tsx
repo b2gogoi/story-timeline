@@ -14,7 +14,29 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
   const setStop = (i: number, v: string) => set({ stops: cfg.stops.map((s, k) => (k === i ? v : s)) })
   const spread = () => {
     const a = toDay(cfg.start), b = toDay(cfg.end)
-    set({ stops: Array.from({ length: evenN }, (_, k) => toISO(Math.round(a + ((b - a) * (k + 1)) / (evenN + 1)))) })
+    set({
+      stops: Array.from({ length: evenN }, (_, k) =>
+        toISO(Math.round(a + ((b - a) * (k + 1)) / (evenN + 1))),
+      ),
+      rollingValues: Array.from({ length: evenN + 2 }, (_, k) =>
+        Math.round(
+          cfg.rollingValues[0] +
+            ((cfg.rollingValues[cfg.rollingValues.length - 1] - cfg.rollingValues[0]) * k) /
+              (evenN + 1),
+        ),
+      ),
+    })
+  }
+
+  const addStop = () => {
+    const values = cfg.rollingValues
+    const lastStop = values[values.length - 2] ?? values[0] ?? 0
+    const end = values[values.length - 1] ?? 0
+
+    set({
+      stops: [...cfg.stops, cfg.end],
+      rollingValues: [...values.slice(0, -1), Math.round((lastStop + end) / 2), end],
+    })
   }
 
   return (
@@ -42,12 +64,23 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
             {cfg.stops.map((s, i) => (
               <div key={i} className="flex gap-2">
                 <input type="date" className={input} value={s} onChange={e => e.target.value && setStop(i, e.target.value)} aria-label={`Stop ${i + 1}`} />
-                <button className={btn} onClick={() => set({ stops: cfg.stops.filter((_, k) => k !== i) })}>Remove</button>
+                {/* <button className={btn} onClick={}>Remove</button> */}
+                <button
+                  className={btn}
+                  onClick={() =>
+                    set({
+                      stops: cfg.stops.filter((_, k) => k !== i),
+                      rollingValues: cfg.rollingValues.filter((_, k) => k !== i + 1),
+                    })
+                  }
+                >
+                  Remove
+                </button>
               </div>
             ))}
           </div>
           <div className="flex items-center gap-2">
-            <button className={btn} onClick={() => set({ stops: [...cfg.stops, cfg.end] })}>Add stop</button>
+            <button className={btn} onClick={addStop}>Add stop</button>
             <span className="ml-auto text-xs text-white/50">Replace with</span>
             <input type="number" min={1} max={24} className={`${input} !w-16`} value={evenN} onChange={e => setEvenN(Math.max(1, +e.target.value || 1))} />
             <button className={btn} onClick={spread}>even stops</button>

@@ -31,7 +31,7 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
   })
 
   return (
-    <div className="pointer-events-none absolute inset-0 grid place-items-center" aria-label="Rolling counter">
+    <div className="pointer-events-none absolute inset-x-0 top-[20cqw] z-10 flex justify-center" aria-label="Rolling counter">
       <div className="flex h-[1em] font-mono text-[18cqw] font-semibold leading-none tabular-nums">
         {[0, 1, 2, 3].map(index => (
           <div key={index} className="h-[1em] w-[0.68em] overflow-hidden text-center">

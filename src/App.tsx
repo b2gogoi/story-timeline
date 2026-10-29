@@ -13,8 +13,9 @@ const initial: Config = {
   start: '2019-10-12', end: '2026-10-06',
   stops: ['2019-12-07', '2021-11-28', '2022-11-26', '2024-10-05', '2025-11-23', '2026-08-29'],
   dob: '1982-09-24',
-  show: { ruler: true, counter: true, dial: true },
   mode: 'auto',
+  rollingValues: [4663, 4242, 4072, 4029, 4019, 3760, 3721, 3660],
+  show: { ruler: true, counter: true, dial: true, rolling: true },
 }
 
 export default function App() {
