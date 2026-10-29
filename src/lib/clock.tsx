@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { type Plan, easeOut, moveDuration, positionAt } from './timeline'
+import { type Plan, easeOut, easePowerForStop, moveDuration, positionAt } from './timeline'
 
 export type Frame = { day: number; progress: number; units: number }
 type Listener = (f: Frame) => void
@@ -20,7 +20,7 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
   const clock = useRef(0)                       // auto-mode plan time
   const live = useRef({ plan, playing, mode })
   live.current = { plan, playing, mode }
-  const man = useRef({ index: 0, moving: false, from: 0, to: 0, t: 0, dur: 0 })
+  const man = useRef({ index: 0, moving: false, from: 0, to: 0, t: 0, dur: 0, power: 3 })
   const lastDay = useRef(plan.points[0])
   const prevMode = useRef(mode)
 
@@ -29,7 +29,8 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
     const { plan } = live.current
     const m = man.current
     m.from = fromDay; m.to = plan.points[i]; m.t = 0
-    m.dur = moveDuration(Math.abs(m.to - m.from), plan.speed, plan.power)
+    m.power = easePowerForStop(plan.power, i, plan.points.length - 1)
+    m.dur = moveDuration(Math.abs(m.to - m.from), plan.speed, m.power)
     m.moving = true
     setIndex(i)
   }
@@ -67,7 +68,7 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
         if (m.moving) {
           m.t += dt
           const p = Math.min(1, m.t / m.dur)
-          day = m.from + (m.to - m.from) * easeOut(p, plan.power)
+          day = m.from + (m.to - m.from) * easeOut(p, m.power)
           if (p >= 1) { m.moving = false; day = m.to }
         } else day = plan.points[m.index]
       } else {
