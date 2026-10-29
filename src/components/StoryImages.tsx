@@ -45,6 +45,7 @@ export function StoryImages({ cfg, plan }: ViewProps) {
             ref={node => { images.current[index] = node }}
             className="absolute inset-0 rounded-[0.8cqw] border-[1.2cqw] border-[#e8e0ce] bg-[#e8e0ce] p-[0.9cqw] shadow-[0_2cqw_4cqw_rgba(0,0,0,0.65),inset_0_0.2cqw_0.3cqw_rgba(255,255,255,0.75),inset_0_-0.35cqw_0.6cqw_rgba(0,0,0,0.25)]"
             style={{
+              opacity: 0,
               zIndex: index,
               transform: `translate(${offset}cqw, ${offset}cqw) rotate(${tilt}deg)`,
               transformOrigin: 'center',
@@ -87,7 +88,6 @@ function StoryImagesControls({ cfg, set }: ControlProps) {
 
   return (
     <Group title="Image URLs">
-      <p className="text-xs text-white/50">Add an image URL for the start, each stop, and the end. </p>
       {field('Start', 0)}
       {cfg.stops.map((_, index) => field(`Stop ${index + 1}`, index + 1))}
       {field('End', cfg.stops.length + 1)}
