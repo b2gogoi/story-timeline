@@ -42,11 +42,11 @@ export function RulerView({ cfg, plan }: ViewProps) {
 
   return (
     <>
-      <div className="absolute inset-y-0 right-[4cqw] w-px opacity-40" style={{ background: 'currentColor' }} />
-      <div ref={layer} className="absolute right-[4cqw] w-[10cqw] will-change-transform" style={{ top: '50%', height: `${(count * 100) / N}%` }}>
+      <div className="absolute inset-y-0 right-0 w-px opacity-40" style={{ background: 'currentColor' }} />
+      <div ref={layer} className="absolute right-0 w-[10cqw] will-change-transform" style={{ top: '50%', height: `${(count * 100) / N}%` }}>
         {ticks}
       </div>
-      <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 items-center pl-[65cqw] pr-[4cqw]">
+      <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 items-center pl-[65cqw] pr-0">
         <span ref={label} className="mr-[2.4cqw] whitespace-nowrap font-mono text-[2.6cqw] tracking-[0.22em]" />
         <span className="h-px flex-1" style={{ background: 'currentColor' }} />
       </div>
