@@ -109,7 +109,7 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
   })
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-[20cqw] z-10 flex justify-center" aria-label="Rolling counter">
+    <div className="pointer-events-none absolute inset-x-0 top-[27cqw] z-10 flex justify-center" aria-label="Rolling counter">
       <div className="relative rounded-[2.2cqw] border border-white/20 bg-gradient-to-b from-[#303438] via-[#171a1d] to-[#070809] p-[2.4cqw] shadow-[0_3cqw_5cqw_rgba(0,0,0,0.8),inset_0_0.6cqw_0.8cqw_rgba(255,255,255,0.16),inset_0_-1cqw_1.2cqw_rgba(0,0,0,0.95)]">
         <div className="rounded-[1cqw] border border-black bg-[#030405] p-[0.9cqw] shadow-[inset_0_1cqw_1.6cqw_rgba(0,0,0,0.95),0_0.35cqw_0.6cqw_rgba(255,255,255,0.16)]">
           <div className="relative flex items-center gap-[0.7cqw] overflow-hidden rounded-[0.6cqw] bg-[#030405]">
@@ -136,8 +136,6 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
               </Fragment>
             ))}
             <div className="pointer-events-none absolute inset-0 z-10 rounded-[0.6cqw] bg-[linear-gradient(to_bottom,rgba(0,0,0,0.58)_0%,rgba(0,0,0,0.24)_12%,rgba(255,255,255,0.25)_23%,transparent_38%,transparent_62%,rgba(0,0,0,0.28)_84%,rgba(0,0,0,0.65)_100%)]" />
-            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-1/2 z-20 h-[0.52cqw] -translate-y-1/2 border-y border-white/55 bg-gradient-to-b from-[#f5f7f8] via-[#747b82] to-[#181b1f] shadow-[0_0.22cqw_0.45cqw_rgba(0,0,0,0.9),0_-0.12cqw_0.22cqw_rgba(255,255,255,0.6)]" />
-          </div>
         </div>
       </div>
     </div>
