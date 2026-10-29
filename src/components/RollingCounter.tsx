@@ -3,7 +3,7 @@ import { useFrame } from '../lib/clock'
 import { type ControlProps, type ViewProps } from '../lib/timeline'
 import { Group, Row, input } from './ui'
 
-const DIGIT_HEIGHT = 11 // cqw; keep in sync with the drum and ribbon row heights
+const DIGIT_HEIGHT = 19 // cqw; keep in sync with the drum and ribbon row heights
 let soundEnabled = true
 let audioContext: AudioContext | null = null
 let lastSoundTime = 0
@@ -110,27 +110,33 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
 
   return (
     <div className="pointer-events-none absolute inset-x-0 top-[20cqw] z-10 flex justify-center" aria-label="Rolling counter">
-      <div className="relative rounded-[1.8cqw] border border-white/15 bg-gradient-to-b from-[#282b2e] via-[#151719] to-[#08090a] p-[1.8cqw] shadow-[0_2cqw_4cqw_rgba(0,0,0,0.75),inset_0_0.5cqw_0.6cqw_rgba(255,255,255,0.14),inset_0_-0.8cqw_1cqw_rgba(0,0,0,0.9)]">
-        <div className="rounded-[0.8cqw] border border-black bg-[#030405] p-[0.7cqw] shadow-[inset_0_0.8cqw_1.4cqw_rgba(0,0,0,0.95),0_0.3cqw_0.5cqw_rgba(255,255,255,0.12)]">
-          <div className="relative flex overflow-hidden rounded-[0.45cqw] bg-black">
+      <div className="relative rounded-[2.2cqw] border border-white/20 bg-gradient-to-b from-[#303438] via-[#171a1d] to-[#070809] p-[2.4cqw] shadow-[0_3cqw_5cqw_rgba(0,0,0,0.8),inset_0_0.6cqw_0.8cqw_rgba(255,255,255,0.16),inset_0_-1cqw_1.2cqw_rgba(0,0,0,0.95)]">
+        <div className="rounded-[1cqw] border border-black bg-[#030405] p-[0.9cqw] shadow-[inset_0_1cqw_1.6cqw_rgba(0,0,0,0.95),0_0.35cqw_0.6cqw_rgba(255,255,255,0.16)]">
+          <div className="relative flex items-center gap-[0.7cqw] overflow-hidden rounded-[0.6cqw] bg-[#030405]">
             {[0, 1, 2, 3].map(index => (
-              <div key={index} className="relative h-[11cqw] w-[10cqw] overflow-hidden border-r border-black/30 bg-gradient-to-r from-[#b5b5b1] via-[#f0eee7] to-[#aaa9a3] last:border-r-0">
-                <span ref={node => { ribbons.current[index] = node }} className="absolute left-0 top-0 flex flex-col will-change-transform" style={{ width: '100%' }}>
-                  {Array.from({ length: 30 }, (_, n) => {
-                    const digit = n % 10
-                    const color = index >= 2
-                      ? 'text-[#bf2525] [text-shadow:0_1px_0_rgba(255,190,190,0.35),0_-1px_0_rgba(70,0,0,0.45)]'
-                      : 'text-[#111315] [text-shadow:0_1px_0_rgba(255,255,255,0.5),0_-1px_0_rgba(0,0,0,0.25)]'
-                    return (
-                      <span key={n} className={`flex shrink-0 items-center justify-center font-mono text-[8.2cqw] font-bold leading-none tabular-nums ${color}`} style={{ height: `${DIGIT_HEIGHT}cqw` }}>
-                        {digit}
-                      </span>
-                    )
-                  })}
-                </span>
-              </div>
+              <Fragment key={index}>
+                {index === 2 && (
+                  <span aria-hidden="true" className="mx-[0.35cqw] h-[19cqw] w-[0.75cqw] shrink-0 rounded-full bg-gradient-to-r from-[#08090a] via-[#c0c5c9] to-[#090a0b] shadow-[0.15cqw_0_0.35cqw_rgba(0,0,0,0.85),-0.1cqw_0_0.25cqw_rgba(255,255,255,0.4)]" />
+                )}
+                <div className="relative h-[19cqw] w-[17cqw] shrink-0 overflow-hidden rounded-[0.65cqw] border border-white/35 bg-gradient-to-r from-[#999b99] via-[#f1efe8] to-[#8f918f] shadow-[inset_0.6cqw_0_0.8cqw_rgba(255,255,255,0.7),inset_-0.65cqw_0_0.9cqw_rgba(0,0,0,0.42),0_0.2cqw_0.3cqw_rgba(0,0,0,0.7)]">
+                  <span ref={node => { ribbons.current[index] = node }} className="absolute left-0 top-0 flex flex-col will-change-transform" style={{ width: '100%' }}>
+                    {Array.from({ length: 30 }, (_, n) => {
+                      const digit = n % 10
+                      const color = index >= 2
+                        ? 'text-[#c51f25] [text-shadow:0_1px_0_rgba(255,190,190,0.45),0_-1px_0_rgba(70,0,0,0.55)]'
+                        : 'text-[#101214] [text-shadow:0_1px_0_rgba(255,255,255,0.58),0_-1px_0_rgba(0,0,0,0.34)]'
+                      return (
+                        <span key={n} className={`flex shrink-0 items-center justify-center font-mono text-[14.2cqw] font-bold leading-none tabular-nums ${color}`} style={{ height: `${DIGIT_HEIGHT}cqw` }}>
+                          {digit}
+                        </span>
+                      )
+                    })}
+                  </span>
+                </div>
+              </Fragment>
             ))}
-            <div className="pointer-events-none absolute inset-0 z-10 rounded-[0.45cqw] bg-[linear-gradient(to_bottom,rgba(0,0,0,0.62)_0%,rgba(0,0,0,0.28)_12%,rgba(255,255,255,0.2)_23%,transparent_38%,transparent_62%,rgba(0,0,0,0.3)_84%,rgba(0,0,0,0.68)_100%)]" />
+            <div className="pointer-events-none absolute inset-0 z-10 rounded-[0.6cqw] bg-[linear-gradient(to_bottom,rgba(0,0,0,0.58)_0%,rgba(0,0,0,0.24)_12%,rgba(255,255,255,0.25)_23%,transparent_38%,transparent_62%,rgba(0,0,0,0.28)_84%,rgba(0,0,0,0.65)_100%)]" />
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-1/2 z-20 h-[0.52cqw] -translate-y-1/2 border-y border-white/55 bg-gradient-to-b from-[#f5f7f8] via-[#747b82] to-[#181b1f] shadow-[0_0.22cqw_0.45cqw_rgba(0,0,0,0.9),0_-0.12cqw_0.22cqw_rgba(255,255,255,0.6)]" />
           </div>
         </div>
       </div>
