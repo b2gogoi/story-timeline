@@ -39,6 +39,7 @@ export function StoryImages({ cfg, plan }: ViewProps) {
       {cfg.storyImages.map((url, index) => {
         const tilt = index === 0 ? 5 : index % 2 === 1 ? -2 - (index % 3) : 2 + (index % 3)
         const offset = Math.min(index * 0.55, 3.3)
+        const city = cfg.storyCities[index]?.trim()
         return (
           <div
             key={index}
@@ -60,6 +61,16 @@ export function StoryImages({ cfg, plan }: ViewProps) {
                 decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20" />
+              {city && (
+                <span
+                  className="absolute bottom-[2.2cqw] left-1/2 z-10 -translate-x-1/2 whitespace-nowrap bg-[#fffdf3] px-[2.6cqw] py-[1.25cqw] font-serif text-[2.8cqw] font-bold italic tracking-[0.08em] text-[#27231d] shadow-[0_0.4cqw_1cqw_rgba(0,0,0,0.35)]"
+                  style={{
+                    clipPath: 'polygon(0 10%, 5% 0, 10% 10%, 15% 0, 20% 10%, 25% 0, 30% 10%, 35% 0, 40% 10%, 45% 0, 50% 10%, 55% 0, 60% 10%, 65% 0, 70% 10%, 75% 0, 80% 10%, 85% 0, 90% 10%, 95% 0, 100% 10%, 100% 90%, 95% 100%, 90% 90%, 85% 100%, 80% 90%, 75% 100%, 70% 90%, 65% 100%, 60% 90%, 55% 100%, 50% 90%, 45% 100%, 40% 90%, 35% 100%, 30% 90%, 25% 100%, 20% 90%, 15% 100%, 10% 90%, 5% 100%, 0 90%)',
+                  }}
+                >
+                  {city}
+                </span>
+              )}
             </div>
           </div>
         )
@@ -74,6 +85,22 @@ function StoryImagesControls({ cfg, set }: ControlProps) {
     storyImages[index] = url
     set({ storyImages })
   }
+  const updateCity = (index: number, city: string) => {
+    const storyCities = [...cfg.storyCities]
+    storyCities[index] = city
+    set({ storyCities })
+  }
+  const cityField = (label: string, index: number) => (
+    <Row label={label}>
+      <input
+        type="text"
+        className={input}
+        placeholder="City name"
+        value={cfg.storyCities[index] ?? ''}
+        onChange={e => updateCity(index, e.target.value)}
+      />
+    </Row>
+  )
   const field = (label: string, index: number) => (
     <Row label={label}>
       <input
@@ -87,10 +114,17 @@ function StoryImagesControls({ cfg, set }: ControlProps) {
   )
 
   return (
-    <Group title="Image URLs">
-      {field('Start', 0)}
-      {cfg.stops.map((_, index) => field(`Stop ${index + 1}`, index + 1))}
-      {field('End', cfg.stops.length + 1)}
+    <Group title="Photos & city labels">
+      {field('Start image', 0)}
+      {cityField('Start city', 0)}
+      {cfg.stops.map((_, index) => (
+        <div key={index} className="space-y-2">
+          {field(`Stop ${index + 1} image`, index + 1)}
+          {cityField(`Stop ${index + 1} city`, index + 1)}
+        </div>
+      ))}
+      {field('End image', cfg.stops.length + 1)}
+      {cityField('End city', cfg.stops.length + 1)}
     </Group>
   )
 }
