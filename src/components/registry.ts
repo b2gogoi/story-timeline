@@ -15,9 +15,9 @@ export type Entry = {
 
 // Order = stacking order (last is on top).
 export const REGISTRY: Entry[] = [
+  { id: 'images', label: 'Story images', View: StoryImages, Controls: StoryImagesControls },
   { id: 'ruler', label: 'Timeline ruler', View: RulerView, Controls: RulerControls },
   { id: 'counter', label: 'Units counter', View: CounterView },
   { id: 'dial', label: 'Masters dial', View: MastersDial },
   { id: 'rolling', label: 'Rolling counter', View: RollingCounter, Controls: RollingCounterControls },
-  { id: 'images', label: 'Story images', View: StoryImages, Controls: StoryImagesControls },
 ]
