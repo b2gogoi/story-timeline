@@ -17,10 +17,12 @@ function playMechanicalTick() {
   const context = audioContext
   if (!soundEnabled || !context || context.state !== 'running') return
   const now = context.currentTime
-  if (now - lastSoundTime < 0.025) return
+  const gap = now - lastSoundTime
+  if (gap < 0.025) return
   lastSoundTime = now
+  const weight = Math.min(1, gap / 0.35) // 0 = fast clatter, 1 = slow, heavy tick
 
-  const length = Math.floor(context.sampleRate * 0.012)
+  const length = Math.floor(context.sampleRate * (0.012 + weight * 0.01))
   const buffer = context.createBuffer(1, length, context.sampleRate)
   const samples = buffer.getChannelData(0)
   for (let i = 0; i < length; i++) samples[i] = (Math.random() * 2 - 1) * Math.exp(-i / (length * 0.28))
@@ -29,26 +31,70 @@ function playMechanicalTick() {
   noise.buffer = buffer
   const filter = context.createBiquadFilter()
   filter.type = 'bandpass'
-  filter.frequency.setValueAtTime(1700 + Math.random() * 500, now)
+  filter.frequency.setValueAtTime(1700 - weight * 500 + Math.random() * 500, now)
   filter.Q.setValueAtTime(2.8, now)
   const noiseGain = context.createGain()
-  noiseGain.gain.setValueAtTime(0.16, now)
-  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.014)
+  noiseGain.gain.setValueAtTime(0.16 * (1 + weight * 0.9), now)
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.014 + weight * 0.012)
   noise.connect(filter).connect(noiseGain).connect(context.destination)
 
   const thump = context.createOscillator()
   thump.type = 'triangle'
-  thump.frequency.setValueAtTime(125, now)
-  thump.frequency.exponentialRampToValueAtTime(48, now + 0.022)
+  thump.frequency.setValueAtTime(125 - weight * 30, now)
+  thump.frequency.exponentialRampToValueAtTime(48, now + 0.022 + weight * 0.03)
   const thumpGain = context.createGain()
-  thumpGain.gain.setValueAtTime(0.12, now)
-  thumpGain.gain.exponentialRampToValueAtTime(0.001, now + 0.024)
+  thumpGain.gain.setValueAtTime(0.12 * (1 + weight * 1.4), now)
+  thumpGain.gain.exponentialRampToValueAtTime(0.001, now + 0.024 + weight * 0.04)
   thump.connect(thumpGain).connect(context.destination)
 
   noise.start(now)
-  noise.stop(now + 0.015)
+  noise.stop(now + 0.015 + weight * 0.012)
   thump.start(now)
-  thump.stop(now + 0.026)
+  thump.stop(now + 0.026 + weight * 0.04)
+}
+
+function playFinalClunk() {
+  const context = audioContext
+  if (!soundEnabled || !context || context.state !== 'running') return
+  const now = context.currentTime + 0.02
+
+  const thud = context.createOscillator()
+  thud.type = 'sine'
+  thud.frequency.setValueAtTime(110, now)
+  thud.frequency.exponentialRampToValueAtTime(38, now + 0.28)
+  const thudGain = context.createGain()
+  thudGain.gain.setValueAtTime(0.5, now)
+  thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.45)
+  thud.connect(thudGain).connect(context.destination)
+  thud.start(now)
+  thud.stop(now + 0.46)
+
+  const length = Math.floor(context.sampleRate * 0.05)
+  const buffer = context.createBuffer(1, length, context.sampleRate)
+  const samples = buffer.getChannelData(0)
+  for (let i = 0; i < length; i++) samples[i] = (Math.random() * 2 - 1) * Math.exp(-i / (length * 0.2))
+  const click = context.createBufferSource()
+  click.buffer = buffer
+  const clickFilter = context.createBiquadFilter()
+  clickFilter.type = 'bandpass'
+  clickFilter.frequency.setValueAtTime(1100, now)
+  clickFilter.Q.setValueAtTime(1.6, now)
+  const clickGain = context.createGain()
+  clickGain.gain.setValueAtTime(0.35, now)
+  clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06)
+  click.connect(clickFilter).connect(clickGain).connect(context.destination)
+  click.start(now)
+  click.stop(now + 0.06)
+
+  const ring = context.createOscillator()
+  ring.type = 'triangle'
+  ring.frequency.setValueAtTime(1960, now)
+  const ringGain = context.createGain()
+  ringGain.gain.setValueAtTime(0.05, now)
+  ringGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5)
+  ring.connect(ringGain).connect(context.destination)
+  ring.start(now)
+  ring.stop(now + 0.5)
 }
 
 function valueAt(day: number, points: number[], values: number[]) {
@@ -68,6 +114,7 @@ function valueAt(day: number, points: number[], values: number[]) {
 export function RollingCounter({ cfg, plan }: ViewProps) {
   const ribbons = useRef<Array<HTMLSpanElement | null>>([])
   const previousInteger = useRef<number | null>(null)
+  const finaleDone = useRef(false)
 
   useEffect(() => {
     const unlock = () => {
@@ -88,6 +135,10 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
     const integer = Math.floor(value)
     if (previousInteger.current !== null && integer !== previousInteger.current) playMechanicalTick()
     previousInteger.current = integer
+    const end = plan.points[plan.points.length - 1]
+    const atEnd = plan.points.length > 1 && Math.abs(day - end) < 1e-6
+    if (atEnd && !finaleDone.current) playFinalClunk()
+    finaleDone.current = atEnds
 
     // The units wheel turns continuously; each higher wheel engages only as
     // the wheel to its right passes through 9 into 0.

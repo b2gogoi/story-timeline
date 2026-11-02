@@ -41,9 +41,18 @@ export const easeOut = (p: number, n: number) => 1 - Math.pow(1 - p, n)
 export const moveDuration = (dist: number, speed: number, power: number) =>
   Math.max(0.35, (dist * power) / (speed * DAYS_PER_MONTH))
 
-/** Give the final timeline stop a longer braking ease across all synchronized layers. */
+/** The final stop is a slow, dramatic finish. */
+const FINALE_POWER = 7      // braking sharpness of the last leg (higher = longer crawl)
+const FINALE_SPEED = 0.5    // fraction of the normal top speed
+const FINALE_SECONDS = 4    // the last leg never takes less than this
+
 export const easePowerForStop = (power: number, stopIndex: number, lastStopIndex: number) =>
-  stopIndex === lastStopIndex ? power * 1.5 : power
+  stopIndex === lastStopIndex ? Math.max(power * 1.5, FINALE_POWER) : power
+
+export const moveDurationForStop = (dist: number, speed: number, power: number, stopIndex: number, lastStopIndex: number) =>
+  stopIndex === lastStopIndex
+    ? Math.max(moveDuration(dist, speed * FINALE_SPEED, power), FINALE_SECONDS)
+    : moveDuration(dist, speed, power)
 
 export type Plan = {
   points: number[]; lead: number; segs: Seg[]; total: number
@@ -59,7 +68,7 @@ export function buildPlan(points: number[], c: Pick<Config, 'speed' | 'easePower
   for (let i = 0; i < points.length - 1; i++) {
     const dist = Math.abs(points[i + 1] - points[i])
     const power = easePowerForStop(c.easePower, i + 1, points.length - 1)
-    const move = moveDuration(dist, c.speed, power)
+    const move = moveDurationForStop(dist, c.speed, power, i + 1, points.length - 1)
     segs.push({ from: points[i], to: points[i + 1], move, hold: c.dwell, power })
     t += move
     arrive.push(t)
