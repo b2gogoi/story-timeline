@@ -16,16 +16,17 @@ const initial: Config = {
   mode: 'auto',
   rollingValues: [4663, 4242, 4072, 4029, 4019, 3760, 3721, 3660],
   storyImages: [
-    'https://picsum.photos/seed/story-timeline-start/1080/1200',
-    'https://picsum.photos/seed/story-timeline-stop-1/1080/1200',
-    'https://picsum.photos/seed/story-timeline-stop-2/1080/1200',
+    'https://ik.imagekit.io/natad0m3/Bhaskar_VAC_2019.jpg',
+    'https://ik.imagekit.io/natad0m3/IMG_3514.jpg',
+    'https://ik.imagekit.io/natad0m3/Bhaskar_Mangalore_2021.heif',
+    'https://ik.imagekit.io/natad0m3/Bhaskar_Ambala_2022_2.heif',
+    'https://ik.imagekit.io/natad0m3/Bhaskar_Vijaynagar_2024.jpg',
     'https://picsum.photos/seed/story-timeline-stop-3/1080/1200',
-    'https://picsum.photos/seed/story-timeline-stop-4/1080/1200',
-    'https://picsum.photos/seed/story-timeline-stop-5/1080/1200',
-    'https://picsum.photos/seed/story-timeline-stop-6/1080/1200',
-    'https://picsum.photos/seed/story-timeline-end/1080/1200',
+    'https://ik.imagekit.io/natad0m3/Bhaskar_Vijaynagar_2026.jpg',
+    'https://ik.imagekit.io/natad0m3/Bhaskar_CSE_2026.jpg',
+        
   ],
-  storyCities: ['', '', '', '', '', '', '', ''],
+  storyCities: ['Bangalore', 'Kuala Lumpur', 'Mangalore', 'Ambala', 'Bangalore', 'Hyderabad', 'Bangalore', 'Bangalore - CSE'],
   show: { ruler: true, counter: true, dial: true, rolling: true, images: true },
 }
 

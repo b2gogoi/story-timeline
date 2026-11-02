@@ -21,7 +21,7 @@ export function CounterView({ cfg }: ViewProps) {
   })
 
   return (
-    <div className="absolute left-[40cqw] top-1/2 mt-[2.2cqw] flex flex-col gap-[0.8cqw] font-mono text-[2.2cqw] tracking-[0.15em] opacity-70">
+    <div className="absolute left-[40cqw] mt-[2.2cqw] flex flex-col gap-[0.8cqw] font-mono text-[2.2cqw] tracking-[0.15em] opacity-70" style={{ top: '56cqw' }}>
       <span ref={unitsRef} />
       <span ref={ageRef} />
     </div>
