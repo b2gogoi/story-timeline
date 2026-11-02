@@ -63,7 +63,7 @@ export function StoryImages({ cfg, plan }: ViewProps) {
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20" />
               {event && (
-                <div className="absolute inset-x-0 top-0 z-10 bg-black px-[2cqw] py-[1.1cqw] text-center font-sans text-[1.9cqw] font-semibold uppercase leading-[1.3] tracking-[0.12em] text-white [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden">
+                <div className="absolute inset-x-0 top-0 z-10 bg-black/25 px-[2cqw] py-[1.1cqw] text-center font-sans text-[2.1cqw] font-semibold uppercase leading-[1.3] tracking-[0.12em] text-white [text-shadow:0_0.1cqw_0.4cqw_rgba(0,0,0,0.8)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden backdrop-blur-[0.5cqw]">
                   {event}
                 </div>
               )}

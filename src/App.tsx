@@ -21,13 +21,22 @@ const initial: Config = {
     'https://ik.imagekit.io/natad0m3/Bhaskar_Mangalore_2021.heif',
     'https://ik.imagekit.io/natad0m3/Bhaskar_Ambala_2022_2.heif',
     'https://ik.imagekit.io/natad0m3/Bhaskar_Vijaynagar_2024.jpg',
-    'https://picsum.photos/seed/story-timeline-stop-3/1080/1200',
+    'https://ik.imagekit.io/natad0m3/Bhaskar_Hyderabad_2025.jpg',
     'https://ik.imagekit.io/natad0m3/Bhaskar_Vijaynagar_2026.jpg',
     'https://ik.imagekit.io/natad0m3/Bhaskar_CSE_2026.jpg',
         
   ],
-  storyCities: ['Bangalore', 'Kuala Lumpur', 'Mangalore', 'Ambala', 'Bangalore', 'Hyderabad', 'Bangalore', 'Bangalore - CSE'],
-  storyEvents: ['', '', '', '', '', '', '', ''],
+  storyCities: ['DEBUT - Bangalore', 'Kuala Lumpur', 'Mangalore', 'Ambala', 'Bangalore', 'Hyderabad', 'Bangalore', 'Bangalore - CSE'],
+  storyEvents: [
+    '21st State Masters Championship', 
+    '6th Malaysia Masters Speedo International', 
+    '17th National Masters Championship', 
+    '18TH NATIONAL MASTERS CHAMPIONSHIP', 
+    '25th State Masters Championship', 
+    '21st National Masters Championship', 
+    '27th State Masters Championship', 
+    '2nd Asian Masters'
+  ],
   show: { ruler: true, counter: true, dial: true, rolling: true, images: true },
 }
 
