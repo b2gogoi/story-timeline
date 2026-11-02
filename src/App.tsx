@@ -27,6 +27,7 @@ const initial: Config = {
         
   ],
   storyCities: ['Bangalore', 'Kuala Lumpur', 'Mangalore', 'Ambala', 'Bangalore', 'Hyderabad', 'Bangalore', 'Bangalore - CSE'],
+  storyEvents: ['', '', '', '', '', '', '', ''],
   show: { ruler: true, counter: true, dial: true, rolling: true, images: true },
 }
 

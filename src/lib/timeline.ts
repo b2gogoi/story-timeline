@@ -33,6 +33,7 @@ export type Config = {
   rollingValues: number[] // values at start, each stop, and end (0000–9999)
   storyImages: string[] // image URLs at start, each stop, and end
   storyCities: string[] // city labels at start, each stop, and end
+  storyEvents: string[] // event names at start, each stop, and end
 }
 
 type Seg = { from: number; to: number; move: number; hold: number; power: number }

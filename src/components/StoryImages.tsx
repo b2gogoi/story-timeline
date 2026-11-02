@@ -40,6 +40,7 @@ export function StoryImages({ cfg, plan }: ViewProps) {
         const tilt = index === 0 ? 5 : index % 2 === 1 ? -2 - (index % 3) : 2 + (index % 3)
         const offset = Math.min(index * 0.55, 3.3)
         const city = cfg.storyCities[index]?.trim()
+        const event = cfg.storyEvents[index]?.trim()
         return (
           <div
             key={index}
@@ -61,6 +62,11 @@ export function StoryImages({ cfg, plan }: ViewProps) {
                 decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20" />
+              {event && (
+                <div className="absolute inset-x-0 top-0 z-10 bg-black px-[2cqw] py-[1.1cqw] text-center font-sans text-[1.9cqw] font-semibold uppercase leading-[1.3] tracking-[0.12em] text-white [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden">
+                  {event}
+                </div>
+              )}
               {city && (
                 <span
                   className="absolute bottom-[2.2cqw] left-1/2 z-10 -translate-x-1/2 whitespace-nowrap bg-[#fffdf3] px-[2.6cqw] py-[1.25cqw] font-serif text-[2.8cqw] font-bold italic tracking-[0.08em] text-[#27231d] shadow-[0_0.4cqw_1cqw_rgba(0,0,0,0.35)]"
@@ -90,6 +96,11 @@ function StoryImagesControls({ cfg, set }: ControlProps) {
     storyCities[index] = city
     set({ storyCities })
   }
+  const updateEvent = (index: number, event: string) => {
+    const storyEvents = [...cfg.storyEvents]
+    storyEvents[index] = event
+    set({ storyEvents })
+  }
   const cityField = (label: string, index: number) => (
     <Row label={label}>
       <input
@@ -98,6 +109,17 @@ function StoryImagesControls({ cfg, set }: ControlProps) {
         placeholder="City name"
         value={cfg.storyCities[index] ?? ''}
         onChange={e => updateCity(index, e.target.value)}
+      />
+    </Row>
+  )
+  const eventField = (label: string, index: number) => (
+    <Row label={label}>
+      <textarea
+        rows={2}
+        className={`${input} resize-none`}
+        placeholder="Event name"
+        value={cfg.storyEvents[index] ?? ''}
+        onChange={e => updateEvent(index, e.target.value)}
       />
     </Row>
   )
@@ -114,16 +136,19 @@ function StoryImagesControls({ cfg, set }: ControlProps) {
   )
 
   return (
-    <Group title="Photos & city labels">
+    <Group title="Photos, events & city labels">
       {field('Start image', 0)}
+      {eventField('Start event', 0)}
       {cityField('Start city', 0)}
       {cfg.stops.map((_, index) => (
         <div key={index} className="space-y-2">
           {field(`Stop ${index + 1} image`, index + 1)}
+          {eventField(`Stop ${index + 1} event`, index + 1)}
           {cityField(`Stop ${index + 1} city`, index + 1)}
         </div>
       ))}
       {field('End image', cfg.stops.length + 1)}
+      {eventField('End event', cfg.stops.length + 1)}
       {cityField('End city', cfg.stops.length + 1)}
     </Group>
   )
