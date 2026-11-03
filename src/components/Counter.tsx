@@ -7,8 +7,8 @@ export function CounterView({ cfg }: ViewProps) {
   const ageRef = useRef<HTMLSpanElement>(null)
   const dob = toDay(cfg.dob)
 
-  useFrame(({ day, units }) => {
-    if (unitsRef.current) unitsRef.current.textContent = `${Math.round(units)} / 1000`
+  useFrame(({ day, units, range }) => {
+    if (unitsRef.current) unitsRef.current.textContent = `${Math.round(units)} / ${Math.round(range)}`
     const age = (day - dob) / 365.25
     if (ageRef.current) {
       if (age < 0) ageRef.current.textContent = 'AGE —'

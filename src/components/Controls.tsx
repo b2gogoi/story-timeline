@@ -11,6 +11,10 @@ type Props = {
 export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
   const [evenN, setEvenN] = useState(4)
   const days = Math.abs(toDay(cfg.end) - toDay(cfg.start))
+  const last = cfg.stops.length + 1
+  const counterStart = cfg.rollingValues[0] ?? 0
+  const counterEnd = cfg.rollingValues[last] ?? 0
+  const counterRange = Math.abs(counterEnd - counterStart)
   const setStop = (i: number, v: string) => set({ stops: cfg.stops.map((s, k) => (k === i ? v : s)) })
   const spread = () => {
     const a = toDay(cfg.start), b = toDay(cfg.end)
@@ -108,7 +112,11 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
             <input type="number" min={1} max={24} className={`${input} !w-16`} value={evenN} onChange={e => setEvenN(Math.max(1, +e.target.value || 1))} />
             <button className={btn} onClick={spread}>even stops</button>
           </div>
-          <p className="text-xs text-white/60">{days.toLocaleString()} days = 1,000 units · 1 unit ≈ {(days / 1000).toFixed(2)} days</p>
+          <p className="text-xs text-white/60">
+            {cfg.mapping === 'counter' && counterRange > 0
+              ? `${counterRange.toLocaleString()} units (${counterStart} to ${counterEnd}) over ${days.toLocaleString()} days · 1 unit ≈ ${(days / counterRange).toFixed(2)} days`
+              : `${days.toLocaleString()} days = 1,000 units · 1 unit ≈ ${(days / 1000).toFixed(2)} days`}
+          </p>
         </Group>
 
         <Group title="Motion">
@@ -121,6 +129,19 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
                   onClick={() => set({ mode: m })}
                 >
                   {m === 'auto' ? 'Auto' : 'Manual'}
+                </button>
+              ))}
+            </div>
+          </Row>
+          <Row label="Timing follows">
+            <div className="grid grid-cols-2 gap-2">
+              {(['dates', 'counter'] as const).map(m => (
+                <button
+                  key={m}
+                  className={`${btn} ${cfg.mapping === m ? '!border-cyan-400/70 !bg-cyan-400/15' : ''}`}
+                  onClick={() => set({ mapping: m })}
+                >
+                  {m === 'dates' ? 'Ruler dates' : 'Rolling counter'}
                 </button>
               ))}
             </div>

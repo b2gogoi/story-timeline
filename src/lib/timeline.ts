@@ -30,6 +30,7 @@ export type Config = {
   dob: string // "YYYY-MM"
   show: Record<ComponentId, boolean>
   mode: 'auto' | 'manual'
+  mapping: 'dates' | 'counter'  // what leg timing and the units counter follow
   rollingValues: number[] // values at start, each stop, and end (0000–9999)
   storyImages: string[] // image URLs at start, each stop, and end
   storyCities: string[] // city labels at start, each stop, and end
@@ -58,15 +59,24 @@ export type Plan = {
   points: number[]; lead: number; segs: Seg[]; total: number
   loop: boolean; power: number; speed: number
   arrive: number[]   // plan time at which each stop is reached
+  values?: number[]    // rolling-counter values, set only when mapping to the counter
+  daysPerUnit?: number
 }
 
 /** Timeline: hold at first stop, then for each leg move (fast start, eased stop) and hold. */
-export function buildPlan(points: number[], c: Pick<Config, 'speed' | 'easePower' | 'dwell' | 'loop'>): Plan {
+export function buildPlan(points: number[], c: Pick<Config, 'speed' | 'easePower' | 'dwell' | 'loop'>, values?: number[]): Plan {
+  const n = points.length
+  // Counter mapping: leg length follows the counter change instead of the date change.
+  const range = values ? Math.abs((values[n - 1] ?? 0) - (values[0] ?? 0)) : 0
+  const spanDays = Math.abs(points[n - 1] - points[0])
+  const daysPerUnit = values && range > 0 && spanDays > 0 ? spanDays / range : undefined
   const segs: Seg[] = []
   const arrive = [0]
   let t = c.dwell
   for (let i = 0; i < points.length - 1; i++) {
-    const dist = Math.abs(points[i + 1] - points[i])
+    const dist = daysPerUnit
+      ? Math.abs((values![i + 1] ?? 0) - (values![i] ?? 0)) * daysPerUnit
+      : Math.abs(points[i + 1] - points[i])
     const power = easePowerForStop(c.easePower, i + 1, points.length - 1)
     const move = moveDurationForStop(dist, c.speed, power, i + 1, points.length - 1)
     segs.push({ from: points[i], to: points[i + 1], move, hold: c.dwell, power })
@@ -74,7 +84,7 @@ export function buildPlan(points: number[], c: Pick<Config, 'speed' | 'easePower
     arrive.push(t)
     t += c.dwell
   }
-  return { points, lead: c.dwell, segs, total: t, loop: c.loop, power: c.easePower, speed: c.speed, arrive }
+  return { points, lead: c.dwell, segs, total: t, loop: c.loop, power: c.easePower, speed: c.speed, arrive, values: daysPerUnit ? values : undefined, daysPerUnit }
 }
 
 export function positionAt(plan: Plan, time: number): number {
@@ -88,4 +98,18 @@ export function positionAt(plan: Plan, time: number): number {
     x -= s.hold
   }
   return plan.points[plan.points.length - 1]
+}
+
+export function valueAt(day: number, points: number[], values: number[]) {
+  if (points.length < 2) return values[0] ?? 0
+  for (let i = 0; i < points.length - 1; i++) {
+    const from = points[i], to = points[i + 1]
+    if (day >= Math.min(from, to) && day <= Math.max(from, to)) {
+      const progress = from === to ? 1 : Math.max(0, Math.min(1, (day - from) / (to - from)))
+      const start = values[i] ?? 0
+      const end = values[i + 1] ?? start
+      return start + (end - start) * progress
+    }
+  }
+  return day < Math.min(...points) ? values[0] ?? 0 : values[values.length - 1] ?? 0
 }

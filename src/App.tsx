@@ -13,7 +13,8 @@ const initial: Config = {
   start: '2019-10-12', end: '2026-10-06',
   stops: ['2019-12-07', '2021-11-28', '2022-11-26', '2024-10-05', '2025-11-23', '2026-08-29'],
   dob: '1982-09-24',
-  mode: 'auto',
+  mode: 'manual',
+  mapping: 'counter',
   rollingValues: [4663, 4242, 4072, 4029, 4019, 3760, 3721, 3660],
   storyImages: [
     'https://ik.imagekit.io/natad0m3/Bhaskar_VAC_2019.jpg',
@@ -48,8 +49,8 @@ export default function App() {
   const [full, setFull] = useState(false)
 
   const plan = useMemo(
-    () => buildPlan([cfg.start, ...cfg.stops, cfg.end].map(toDay), cfg),
-    [cfg.start, cfg.end, cfg.stops, cfg.speed, cfg.easePower, cfg.dwell, cfg.loop], // eslint-disable-line react-hooks/exhaustive-deps
+    () => buildPlan([cfg.start, ...cfg.stops, cfg.end].map(toDay), cfg, cfg.mapping === 'counter' ? cfg.rollingValues : undefined),
+    [cfg.start, cfg.end, cfg.stops, cfg.speed, cfg.easePower, cfg.dwell, cfg.loop, cfg.mapping, cfg.rollingValues], // eslint-disable-line react-hooks/exhaustive-deps
   )
 
   useEffect(() => {

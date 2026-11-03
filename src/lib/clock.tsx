@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { type Plan, easeOut, easePowerForStop, moveDurationForStop, positionAt } from './timeline'
+import { type Plan, easeOut, easePowerForStop, moveDurationForStop, positionAt, valueAt } from './timeline'
 
-export type Frame = { day: number; progress: number; units: number }
+export type Frame = { day: number; progress: number; units: number; range: number }
+
 type Listener = (f: Frame) => void
 type Api = {
   subscribe: (fn: Listener) => () => void
@@ -30,7 +31,10 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
     const m = man.current
     m.from = fromDay; m.to = plan.points[i]; m.t = 0
     m.power = easePowerForStop(plan.power, i, plan.points.length - 1)
-    m.dur = moveDurationForStop(Math.abs(m.to - m.from), plan.speed, m.power, i, plan.points.length - 1)
+    const dist = plan.values && plan.daysPerUnit
+      ? Math.abs((plan.values[i] ?? 0) - valueAt(fromDay, plan.points, plan.values)) * plan.daysPerUnit
+      : Math.abs(m.to - m.from)
+    m.dur = moveDurationForStop(dist, plan.speed, m.power, i, plan.points.length - 1)
     m.moving = true
     setIndex(i)
   }
@@ -78,8 +82,18 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
 
       lastDay.current = day
       const a = plan.points[0], b = plan.points[lastIdx]
-      const progress = b === a ? 0 : (day - a) / (b - a)
-      const f = { day, progress, units: progress * 1000 }
+      let progress: number, units: number, range: number
+      if (plan.values) {
+        const v0 = plan.values[0] ?? 0
+        range = Math.abs((plan.values[lastIdx] ?? 0) - v0)
+        units = Math.abs(valueAt(day, plan.points, plan.values) - v0)
+        progress = range ? units / range : 0
+      } else {
+        range = 1000
+        progress = b === a ? 0 : (day - a) / (b - a)
+        units = progress * 1000
+      }
+      const f = { day, progress, units, range }
       listeners.current.forEach(fn => fn(f))
       raf = requestAnimationFrame(loop)
     }

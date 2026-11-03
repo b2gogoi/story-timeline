@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { useFrame } from '../lib/clock'
-import { type ControlProps, type ViewProps } from '../lib/timeline'
+import { type ControlProps, type ViewProps, valueAt } from '../lib/timeline'
 import { Group, Row, input } from './ui'
 
 const DIGIT_HEIGHT = 19 // cqw; keep in sync with the drum and ribbon row heights
@@ -97,19 +97,7 @@ function playFinalClunk() {
   ring.stop(now + 0.5)
 }
 
-function valueAt(day: number, points: number[], values: number[]) {
-  if (points.length < 2) return values[0] ?? 0
-  for (let i = 0; i < points.length - 1; i++) {
-    const from = points[i], to = points[i + 1]
-    if (day >= Math.min(from, to) && day <= Math.max(from, to)) {
-      const progress = from === to ? 1 : Math.max(0, Math.min(1, (day - from) / (to - from)))
-      const start = values[i] ?? 0
-      const end = values[i + 1] ?? start
-      return start + (end - start) * progress
-    }
-  }
-  return day < Math.min(...points) ? values[0] ?? 0 : values[values.length - 1] ?? 0
-}
+
 
 export function RollingCounter({ cfg, plan }: ViewProps) {
   const ribbons = useRef<Array<HTMLSpanElement | null>>([])
@@ -138,7 +126,7 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
     const end = plan.points[plan.points.length - 1]
     const atEnd = plan.points.length > 1 && Math.abs(day - end) < 1e-6
     if (atEnd && !finaleDone.current) playFinalClunk()
-    finaleDone.current = atEnds
+    finaleDone.current = atEnd
 
     // The units wheel turns continuously; each higher wheel engages only as
     // the wheel to its right passes through 9 into 0.
