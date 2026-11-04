@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { useFrame } from '../lib/clock'
+import { START_PAUSE_SECONDS, useFrame } from '../lib/clock'
 import { type ControlProps, type ViewProps, valueAt } from '../lib/timeline'
 import { Group, Row, input } from './ui'
 
@@ -124,8 +124,8 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
     const integer = Math.floor(value)
     if (startProgress < 1) {
       if (previousStartProgress.current >= 1) startupTicksThrough.current = -1
-      const elapsed = startProgress * 4
-      const activeDigit = Math.min(3, Math.floor(elapsed))
+      const elapsed = startProgress * START_PAUSE_SECONDS
+      const activeDigit = Math.min(3, Math.floor(elapsed / 2))
       if (activeDigit > startupTicksThrough.current) {
         for (let i = startupTicksThrough.current + 1; i <= activeDigit; i++) {
           const place = 10 ** (3 - i)
@@ -152,8 +152,8 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
       let digitWithFraction: number
       if (startProgress < 1) {
         const destination = Math.floor(startValue / place) % 10
-        const elapsed = startProgress * 4
-        const wheelProgress = Math.max(0, Math.min(1, elapsed - index))
+        const elapsed = startProgress * START_PAUSE_SECONDS
+        const wheelProgress = Math.max(0, Math.min(1, elapsed / 2 - index))
         const easedProgress = 1 - (1 - wheelProgress) ** 3
         digitWithFraction = destination * easedProgress
       } else if (index === 3) {
