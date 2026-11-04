@@ -86,8 +86,10 @@ export default function App() {
       <div className="flex h-screen bg-neutral-900 font-sans">
         <PageSidebar activePage={activePage} onNavigate={setActivePage} />
         {activePage === 'player' && (
-          <Controls cfg={cfg} set={set} playing={playing} onToggle={() => setPlaying(p => !p)} onRestart={() => setRun(r => r + 1)} selected={selectedComponent} onSelect={setSelectedComponent} />
-          <ComponentPreview cfg={cfg} plan={plan} selected={selectedComponent} />
+          <>
+            <Controls cfg={cfg} set={set} playing={playing} onToggle={() => setPlaying(p => !p)} onRestart={() => setRun(r => r + 1)} selected={selectedComponent} onSelect={setSelectedComponent} />
+            <ComponentPreview cfg={cfg} plan={plan} selected={selectedComponent} />
+          </>
         )}
         <main className={activePage === 'player'
           ? 'flex min-w-0 flex-1 flex-col items-end justify-center gap-3 p-6'
