@@ -88,7 +88,7 @@ export default function App() {
         {activePage === 'player' && (
           <>
             <Controls cfg={cfg} set={set} playing={playing} onToggle={() => setPlaying(p => !p)} onRestart={() => setRun(r => r + 1)} selected={selectedComponent} onSelect={setSelectedComponent} />
-            <ComponentPreview cfg={cfg} plan={plan} selected={selectedComponent} set={set} />
+            <ComponentPreview cfg={cfg} selected={selectedComponent} set={set} />
           </>
         )}
         <main className={activePage === 'player'
