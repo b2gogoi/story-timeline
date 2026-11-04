@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { type ComponentId, type Plan, type Config } from '../lib/timeline'
 import { Story } from './Story'
 import { REGISTRY } from './registry'
+import { GlobalControls } from './GlobalControls'
 import type { ControlProps } from '../lib/timeline'
 
 export function ComponentPreview({ cfg, plan, selected, set }: { cfg: Config; plan: Plan; selected: ComponentId | 'global'; set: ControlProps['set'] }) {
@@ -13,7 +14,7 @@ export function ComponentPreview({ cfg, plan, selected, set }: { cfg: Config; pl
         <h2 className="text-base font-semibold text-white">Controls and Preview</h2>
         <p className="mt-1 text-xs text-white/50">{selected === 'global' ? 'Global' : selected}</p>
       </header>
-      {selected !== 'global' && (() => {
+      {selected === 'global' ? <div className="max-h-[55%] overflow-y-auto"><GlobalControls cfg={cfg} set={set} /></div> : (() => {
         const ComponentControls = REGISTRY.find(item => item.id === selected)?.Controls
         return ComponentControls ? <div className="max-h-[45%] overflow-y-auto border-b border-white/10 pb-3"><ComponentControls cfg={cfg} set={set} /></div> : null
       })()}
