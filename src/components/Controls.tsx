@@ -77,7 +77,14 @@ export function Controls({ cfg, set, playing, onToggle, onRestart, selected, onS
       </div>
 
       <Section title="Controls and Preview">
-        <h2 className="text-lg font-semibold text-white">{selected === 'global' ? 'Global' : REGISTRY.find(item => item.id === selected)?.label}</h2>
+        <button
+          type="button"
+          onClick={() => onSelect('global')}
+          aria-pressed={selected === 'global'}
+          className={`w-full rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-left text-sm font-semibold hover:text-cyan-200 ${selected === 'global' ? 'text-cyan-200' : 'text-white'}`}
+        >
+          Global
+        </button>
         {REGISTRY.map(({ id, label, Controls: C }) => (
           <section key={id} className="space-y-3 rounded-lg border border-white/10 bg-white/[0.03] p-4">
             <div className="flex items-center gap-3 text-sm font-semibold text-white">
