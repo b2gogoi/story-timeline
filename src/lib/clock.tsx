@@ -12,7 +12,7 @@ type Api = {
   prev: () => void
 }
 const Ctx = createContext<Api>(null!)
-const START_PAUSE_SECONDS = 4
+export const START_PAUSE_SECONDS = 8
 
 type Props = { plan: Plan; playing: boolean; mode: 'auto' | 'manual'; children: ReactNode }
 
