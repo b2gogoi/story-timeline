@@ -86,11 +86,11 @@ export default function App() {
           <Controls cfg={cfg} set={set} playing={playing} onToggle={() => setPlaying(p => !p)} onRestart={() => setRun(r => r + 1)} />
         )}
         <main className={activePage === 'player'
-          ? 'flex min-w-0 flex-1 flex-col items-center justify-center gap-3 p-6'
+          ? 'flex min-h-0 min-w-0 flex-1 items-stretch justify-end overflow-hidden'
           : 'min-h-0 min-w-0 flex-1 overflow-hidden'}>
           {activePage === 'player' ? (
             <>
-              <div className="h-[calc(100vh-7rem)] max-h-[960px] overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
+              <div className="h-full max-h-none overflow-hidden rounded-none shadow-2xl ring-1 ring-white/10">
                 <Story cfg={cfg} plan={plan} />
               </div>
               <div className="flex items-center gap-4">
