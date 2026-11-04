@@ -7,6 +7,8 @@ import { TimelineClock } from './lib/clock'
 import { type Config, buildPlan, toDay } from './lib/timeline'
 import { StepControls } from './components/StepControls'
 import { LegTimes } from './components/LegTimes'
+import { GalleryPage } from './components/GalleryPage'
+import { PageSidebar, type AppPage } from './components/PageSidebar'
 
 const initial: Config = {
   bgFrom: '#414949', bgTo: '#0e1010', bgSplit: 25, fontColor: '#e6f4f7',
@@ -50,6 +52,7 @@ export default function App() {
   const [run, setRun] = useState(0)
   const set = (p: Partial<Config>) => setCfg(c => ({ ...c, ...p }))
   const [full, setFull] = useState(false)
+  const [activePage, setActivePage] = useState<AppPage>('player')
 
   const plan = useMemo(
     () => buildPlan([cfg.start, ...cfg.stops, cfg.end].map(toDay), cfg, cfg.mapping === 'counter' ? cfg.rollingValues : undefined),
@@ -78,19 +81,30 @@ export default function App() {
   return (
     <TimelineClock key={run} plan={plan} playing={playing} mode={cfg.mode}>
       <div className="flex h-screen bg-neutral-900 font-sans">
-        <Controls cfg={cfg} set={set} playing={playing} onToggle={() => setPlaying(p => !p)} onRestart={() => setRun(r => r + 1)} />
-        <main className="flex min-w-0 flex-1 flex-col items-center justify-center gap-3 p-6">
-          <div className="h-[calc(100vh-7rem)] max-h-[960px] overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
-            <Story cfg={cfg} plan={plan} />
-          </div>
-          <div className="flex items-center gap-4">
-            {cfg.mode === 'manual'
-              ? <StepControls count={cfg.stops.length + 2} />
-              : <p className="text-xs text-white/40">Story format 9:16 (1080 × 1920)</p>}
-            <button className={btn} onClick={toggleFull}>{full ? 'Exit full screen' : 'Full screen'}</button>
-          </div>
+        <PageSidebar activePage={activePage} onNavigate={setActivePage} />
+        {activePage === 'player' && (
+          <Controls cfg={cfg} set={set} playing={playing} onToggle={() => setPlaying(p => !p)} onRestart={() => setRun(r => r + 1)} />
+        )}
+        <main className={activePage === 'player'
+          ? 'flex min-w-0 flex-1 flex-col items-center justify-center gap-3 p-6'
+          : 'min-h-0 min-w-0 flex-1 overflow-hidden'}>
+          {activePage === 'player' ? (
+            <>
+              <div className="h-[calc(100vh-7rem)] max-h-[960px] overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
+                <Story cfg={cfg} plan={plan} />
+              </div>
+              <div className="flex items-center gap-4">
+                {cfg.mode === 'manual'
+                  ? <StepControls count={cfg.stops.length + 2} />
+                  : <p className="text-xs text-white/40">Story format 9:16 (1080 × 1920)</p>}
+                <button className={btn} onClick={toggleFull}>{full ? 'Exit full screen' : 'Full screen'}</button>
+              </div>
+            </>
+          ) : (
+            <GalleryPage />
+          )}
         </main>
-        <LegTimes plan={plan} mode={cfg.mode} />
+        {activePage === 'player' && <LegTimes plan={plan} mode={cfg.mode} />}
       </div>
     </TimelineClock>
   )
