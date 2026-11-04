@@ -102,6 +102,7 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
   const previousInteger = useRef<number | null>(null)
   const finaleDone = useRef(false)
   const startupTicksThrough = useRef(-1)
+  const previousStartProgress = useRef(1)
 
   useEffect(() => {
     const unlock = () => {
@@ -122,10 +123,14 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
     const value = Math.max(0, Math.min(9999, startProgress < 1 ? startValue : valueAt(day, plan.points, cfg.rollingValues)))
     const integer = Math.floor(value)
     if (startProgress < 1) {
+      if (previousStartProgress.current >= 1) startupTicksThrough.current = -1
       const elapsed = startProgress * 4
       const activeDigit = Math.min(3, Math.floor(elapsed))
       if (activeDigit > startupTicksThrough.current) {
-        for (let i = startupTicksThrough.current + 1; i <= activeDigit; i++) playMechanicalTick()
+        for (let i = startupTicksThrough.current + 1; i <= activeDigit; i++) {
+          const place = 10 ** (3 - i)
+          if (Math.floor(startValue / place) % 10 !== 0) playMechanicalTick()
+        }
         startupTicksThrough.current = activeDigit
       }
       previousInteger.current = null
@@ -134,6 +139,7 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
       previousInteger.current = integer
       startupTicksThrough.current = 3
     }
+    previousStartProgress.current = startProgress
     const end = plan.points[plan.points.length - 1]
     const atEnd = plan.points.length > 1 && Math.abs(day - end) < 1e-6
     if (atEnd && !finaleDone.current) playFinalClunk()
