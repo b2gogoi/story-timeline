@@ -175,11 +175,24 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
       <Section title="Components">
         {REGISTRY.map(({ id, label, Controls: C }) => (
           <section key={id} className="space-y-3 rounded-lg border border-white/10 bg-white/[0.03] p-4">
-            <label onClick={() => setSelected(id)} className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-              {label}
-              <input type="checkbox" className="size-4 accent-cyan-400" checked={cfg.show[id]} onChange={e => set({ show: { ...cfg.show, [id]: e.target.checked } })} />
-            </label>
-            {selected === id && cfg.show[id] && C && <C cfg={cfg} set={set} />}
+            <div className="flex items-center gap-3 text-sm font-semibold text-white">
+              <button
+                type="button"
+                onClick={() => setSelected(id)}
+                aria-pressed={selected === id}
+                className={`flex-1 rounded px-1 py-1 text-left hover:text-cyan-200 ${selected === id ? 'text-cyan-200' : ''}`}
+              >
+                {label}
+              </button>
+              <input
+                type="checkbox"
+                className="size-4 accent-cyan-400"
+                aria-label={`Show ${label} in story`}
+                checked={cfg.show[id]}
+                onChange={e => set({ show: { ...cfg.show, [id]: e.target.checked } })}
+              />
+            </div>
+            {selected === id && C && <C cfg={cfg} set={set} />}
           </section>
         ))}
       </Section>
