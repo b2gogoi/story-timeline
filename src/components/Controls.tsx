@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { type ComponentId } from '../lib/timeline'
 import { type Config, toDay, toISO } from '../lib/timeline'
 import { REGISTRY } from './registry'
 import { Color, Group, Row, Section, Slider, btn, input } from './ui'
@@ -10,6 +11,7 @@ type Props = {
 
 export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
   const [evenN, setEvenN] = useState(4)
+  const [selected, setSelected] = useState<ComponentId | 'global'>('global')
   const days = Math.abs(toDay(cfg.end) - toDay(cfg.start))
   const last = cfg.stops.length + 1
   const counterStart = cfg.rollingValues[0] ?? 0
@@ -173,11 +175,11 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
       <Section title="Components">
         {REGISTRY.map(({ id, label, Controls: C }) => (
           <section key={id} className="space-y-3 rounded-lg border border-white/10 bg-white/[0.03] p-4">
-            <label className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
+            <label onClick={() => setSelected(id)} className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
               {label}
               <input type="checkbox" className="size-4 accent-cyan-400" checked={cfg.show[id]} onChange={e => set({ show: { ...cfg.show, [id]: e.target.checked } })} />
             </label>
-            {cfg.show[id] && C && <C cfg={cfg} set={set} />}
+            {selected === id && cfg.show[id] && C && <C cfg={cfg} set={set} />}
           </section>
         ))}
       </Section>
