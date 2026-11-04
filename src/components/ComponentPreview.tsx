@@ -6,7 +6,7 @@ import { GlobalControls } from './GlobalControls'
 import type { ControlProps } from '../lib/timeline'
 
 export function ComponentPreview({ cfg, plan, selected, set }: { cfg: Config; plan: Plan; selected: ComponentId | 'global'; set: ControlProps['set'] }) {
-  const [scale, setScale] = useState(100)
+  const [scale, setScale] = useState(120)
   const show = Object.fromEntries(Object.keys(cfg.show).map(key => [key, selected !== 'global' && key === selected])) as Config['show']
   return (
     <aside className="flex w-[720px] shrink-0 flex-col gap-4 overflow-y-auto border-r border-white/10 bg-neutral-950 p-4">
@@ -19,7 +19,7 @@ export function ComponentPreview({ cfg, plan, selected, set }: { cfg: Config; pl
         return ComponentControls ? <div className="max-h-[45%] overflow-y-auto border-b border-white/10 pb-3"><ComponentControls cfg={cfg} set={set} /></div> : null
       })()}
       <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-black/30 pb-4">
-        <div className="h-[320px] origin-bottom" >
+        <div className="h-[320px] origin-center" style={{ transform: `scale(${scale / 100})` }}>
           <Story cfg={{ ...cfg, show }} plan={plan} previewComponent={selected === 'global' ? undefined : selected} previewScale={1} />
         </div>
       </div>
