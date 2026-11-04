@@ -101,6 +101,7 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
   const ribbons = useRef<Array<HTMLSpanElement | null>>([])
   const previousInteger = useRef<number | null>(null)
   const finaleDone = useRef(false)
+  const startupTicksThrough = useRef(-1)
 
   useEffect(() => {
     const unlock = () => {
@@ -118,11 +119,21 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
 
   useFrame(({ day, startProgress }) => {
     const startValue = cfg.rollingValues[0] ?? 0
-    const startupValue = startValue * (1 - (1 - startProgress) ** 2)
-    const value = Math.max(0, Math.min(9999, startProgress < 1 ? startupValue : valueAt(day, plan.points, cfg.rollingValues)))
+    const value = Math.max(0, Math.min(9999, startProgress < 1 ? startValue : valueAt(day, plan.points, cfg.rollingValues)))
     const integer = Math.floor(value)
-    if (previousInteger.current !== null && integer !== previousInteger.current) playMechanicalTick()
-    previousInteger.current = integer
+    if (startProgress < 1) {
+      const elapsed = startProgress * 4
+      const activeDigit = Math.min(3, Math.floor(elapsed))
+      if (activeDigit > startupTicksThrough.current) {
+        for (let i = startupTicksThrough.current + 1; i <= activeDigit; i++) playMechanicalTick()
+        startupTicksThrough.current = activeDigit
+      }
+      previousInteger.current = null
+    } else {
+      if (previousInteger.current !== null && integer !== previousInteger.current) playMechanicalTick()
+      previousInteger.current = integer
+      startupTicksThrough.current = 3
+    }
     const end = plan.points[plan.points.length - 1]
     const atEnd = plan.points.length > 1 && Math.abs(day - end) < 1e-6
     if (atEnd && !finaleDone.current) playFinalClunk()
@@ -133,7 +144,13 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
     for (let index = 3; index >= 0; index--) {
       const place = 10 ** (3 - index)
       let digitWithFraction: number
-      if (index === 3) {
+      if (startProgress < 1) {
+        const destination = Math.floor(startValue / place) % 10
+        const elapsed = startProgress * 4
+        const wheelProgress = Math.max(0, Math.min(1, elapsed - index))
+        const easedProgress = 1 - (1 - wheelProgress) ** 3
+        digitWithFraction = destination * easedProgress
+      } else if (index === 3) {
         digitWithFraction = value % 10
       } else {
         const childDigit = (value / (place / 10)) % 10
