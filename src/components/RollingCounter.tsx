@@ -116,8 +116,10 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
     }
   }, [])
 
-  useFrame(({ day }) => {
-    const value = Math.max(0, Math.min(9999, valueAt(day, plan.points, cfg.rollingValues)))
+  useFrame(({ day, startProgress }) => {
+    const startValue = cfg.rollingValues[0] ?? 0
+    const startupValue = startValue * (1 - (1 - startProgress) ** 2)
+    const value = Math.max(0, Math.min(9999, startProgress < 1 ? startupValue : valueAt(day, plan.points, cfg.rollingValues)))
     const integer = Math.floor(value)
     if (previousInteger.current !== null && integer !== previousInteger.current) playMechanicalTick()
     previousInteger.current = integer
