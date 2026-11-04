@@ -6,7 +6,7 @@ import { GlobalControls } from './GlobalControls'
 import type { ControlProps } from '../lib/timeline'
 
 export function ComponentPreview({ cfg, plan, selected, set }: { cfg: Config; plan: Plan; selected: ComponentId | 'global'; set: ControlProps['set'] }) {
-  const [scale, setScale] = useState(80)
+  const [scale, setScale] = useState(100)
   const show = Object.fromEntries(Object.keys(cfg.show).map(key => [key, selected !== 'global' && key === selected])) as Config['show']
   return (
     <aside className="flex w-[720px] shrink-0 flex-col gap-4 overflow-y-auto border-r border-white/10 bg-neutral-950 p-4">
@@ -23,8 +23,8 @@ export function ComponentPreview({ cfg, plan, selected, set }: { cfg: Config; pl
           <Story cfg={{ ...cfg, show }} plan={plan} previewComponent={selected === 'global' ? undefined : selected} previewScale={scale / 100} />
         </div>
       </div>
-      <label className="text-xs text-white/60">Component size
-        <input type="range" min="40" max="125" step="1" value={scale} onChange={e => setScale(Number(e.target.value))} className="mt-2 w-full accent-cyan-400" />
+      <label className="text-xs text-white/60">Component size <span className="float-right font-mono text-white/80">{scale}%</span>
+        <input type="range" min="40" max="200" step="1" value={scale} onChange={e => setScale(Number(e.target.value))} className="mt-2 w-full accent-cyan-400" />
       </label>
     </aside>
   )
