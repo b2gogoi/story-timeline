@@ -193,7 +193,6 @@ export function Controls({ cfg, set, playing, onToggle, onRestart, selected, onS
                 onChange={e => set({ show: { ...cfg.show, [id]: e.target.checked } })}
               />
             </div>
-            {selected === id && C && <C cfg={cfg} set={set} />}
           </section>
         ))}
       </Section>
