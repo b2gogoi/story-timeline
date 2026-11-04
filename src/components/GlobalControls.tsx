@@ -12,9 +12,6 @@ export function GlobalControls({ cfg, set }: { cfg: Config; set: (p: Partial<Con
   return (
     <div className="space-y-5">
       <Section title="Global settings">
-        <Group title="Athlete">
-          <Row label="Date of birth"><input type="date" className={input} value={cfg.dob} onChange={e => e.target.value && set({ dob: e.target.value })} /></Row>
-        </Group>
         <Group title="Dates and stops">
           <div className="grid grid-cols-2 gap-3">
             <Row label="Start"><input type="date" className={input} value={cfg.start} onChange={e => e.target.value && set({ start: e.target.value })} /></Row>
