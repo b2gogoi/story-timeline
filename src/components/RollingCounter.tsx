@@ -128,7 +128,8 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
       const activeDigit = Math.min(3, Math.floor(elapsed / 2))
       if (activeDigit > startupTicksThrough.current) {
         for (let i = startupTicksThrough.current + 1; i <= activeDigit; i++) {
-          const place = 10 ** (3 - i)
+          const digitIndex = 3 - i
+          const place = 10 ** (3 - digitIndex)
           if (Math.floor(startValue / place) % 10 !== 0) playMechanicalTick()
         }
         startupTicksThrough.current = activeDigit
@@ -146,14 +147,14 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
     finaleDone.current = atEnd
 
     // The units wheel turns continuously; each higher wheel engages only as
-    // the wheel to its right passes through 9 into 0.
+    // the wheel to its right passes through 9 into 0. Startup sets wheels right to left.
     for (let index = 3; index >= 0; index--) {
       const place = 10 ** (3 - index)
       let digitWithFraction: number
       if (startProgress < 1) {
         const destination = Math.floor(startValue / place) % 10
         const elapsed = startProgress * START_PAUSE_SECONDS
-        const wheelProgress = Math.max(0, Math.min(1, elapsed / 2 - index))
+        const wheelProgress = Math.max(0, Math.min(1, elapsed / 2 - (3 - index)))
         const easedProgress = 1 - (1 - wheelProgress) ** 3
         digitWithFraction = destination * easedProgress
       } else if (index === 3) {
