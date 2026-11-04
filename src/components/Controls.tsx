@@ -7,11 +7,11 @@ import { Color, Group, Row, Section, Slider, btn, input } from './ui'
 type Props = {
   cfg: Config; set: (p: Partial<Config>) => void
   playing: boolean; onToggle: () => void; onRestart: () => void
+  selected: ComponentId | 'global'; onSelect: (id: ComponentId | 'global') => void
 }
 
-export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
+export function Controls({ cfg, set, playing, onToggle, onRestart, selected, onSelect }: Props) {
   const [evenN, setEvenN] = useState(4)
-  const [selected, setSelected] = useState<ComponentId | 'global'>('global')
   const days = Math.abs(toDay(cfg.end) - toDay(cfg.start))
   const last = cfg.stops.length + 1
   const counterStart = cfg.rollingValues[0] ?? 0
@@ -179,7 +179,7 @@ export function Controls({ cfg, set, playing, onToggle, onRestart }: Props) {
             <div className="flex items-center gap-3 text-sm font-semibold text-white">
               <button
                 type="button"
-                onClick={() => setSelected(id)}
+                onClick={() => onSelect(id)}
                 aria-pressed={selected === id}
                 className={`flex-1 rounded px-1 py-1 text-left hover:text-cyan-200 ${selected === id ? 'text-cyan-200' : ''}`}
               >
