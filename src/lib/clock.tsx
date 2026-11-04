@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { type Plan, easeOut, easePowerForStop, moveDurationForStop, positionAt, valueAt } from './timeline'
 
-export type Frame = { day: number; progress: number; units: number; range: number }
+export type Frame = { day: number; progress: number; units: number; range: number; startProgress: number }
 
 type Listener = (f: Frame) => void
 type Api = {
@@ -69,9 +69,11 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
       }
 
       let day: number
+      let startProgress = 1
       if (mode === 'manual') {
         if (startPause.current > 0) {
           startPause.current = Math.max(0, startPause.current - dt)
+          startProgress = 1 - startPause.current / START_PAUSE_SECONDS
           day = plan.points[0]
         } else {
           if (m.index > lastIdx) setIndex(lastIdx)
@@ -83,8 +85,10 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
           } else day = plan.points[m.index]
         }
       } else {
-        if (playing && startPause.current > 0) startPause.current = Math.max(0, startPause.current - dt)
-        else if (playing) clock.current += dt
+        if (playing && startPause.current > 0) {
+          startPause.current = Math.max(0, startPause.current - dt)
+          startProgress = 1 - startPause.current / START_PAUSE_SECONDS
+        } else if (playing) clock.current += dt
 
         if (startPause.current > 0) day = plan.points[0]
         else if (plan.loop) {
@@ -107,7 +111,7 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
         progress = b === a ? 0 : (day - a) / (b - a)
         units = progress * 1000
       }
-      const f = { day, progress, units, range }
+      const f = { day, progress, units, range, startProgress }
       listeners.current.forEach(fn => fn(f))
       raf = requestAnimationFrame(loop)
     }
