@@ -12,7 +12,7 @@ type Api = {
   prev: () => void
 }
 const Ctx = createContext<Api>(null!)
-const START_PAUSE_SECONDS = 2
+const START_PAUSE_SECONDS = 4
 
 type Props = { plan: Plan; playing: boolean; mode: 'auto' | 'manual'; children: ReactNode }
 
@@ -94,7 +94,10 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
         else if (plan.loop) {
           const cycle = plan.total + START_PAUSE_SECONDS
           const phase = clock.current % Math.max(cycle, 0.001)
-          day = phase >= plan.total ? plan.points[0] : positionAt(plan, phase)
+          if (phase >= plan.total) {
+            startProgress = Math.min(1, (phase - plan.total) / START_PAUSE_SECONDS)
+            day = plan.points[0]
+          } else day = positionAt(plan, phase)
         } else day = positionAt(plan, clock.current)
       }
 
