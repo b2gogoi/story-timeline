@@ -9,6 +9,8 @@ import { StepControls } from './components/StepControls'
 import { LegTimes } from './components/LegTimes'
 import { GalleryPage } from './components/GalleryPage'
 import { PageSidebar, type AppPage } from './components/PageSidebar'
+import { ComponentPreview } from './components/ComponentPreview'
+import { type ComponentId } from './lib/timeline'
 
 const initial: Config = {
   bgFrom: '#414949', bgTo: '#0e1010', bgSplit: 25, fontColor: '#e6f4f7',
@@ -53,6 +55,7 @@ export default function App() {
   const set = (p: Partial<Config>) => setCfg(c => ({ ...c, ...p }))
   const [full, setFull] = useState(false)
   const [activePage, setActivePage] = useState<AppPage>('player')
+  const [selectedComponent, setSelectedComponent] = useState<ComponentId | 'global'>('global')
 
   const plan = useMemo(
     () => buildPlan([cfg.start, ...cfg.stops, cfg.end].map(toDay), cfg, cfg.mapping === 'counter' ? cfg.rollingValues : undefined),
@@ -83,7 +86,8 @@ export default function App() {
       <div className="flex h-screen bg-neutral-900 font-sans">
         <PageSidebar activePage={activePage} onNavigate={setActivePage} />
         {activePage === 'player' && (
-          <Controls cfg={cfg} set={set} playing={playing} onToggle={() => setPlaying(p => !p)} onRestart={() => setRun(r => r + 1)} />
+          <Controls cfg={cfg} set={set} playing={playing} onToggle={() => setPlaying(p => !p)} onRestart={() => setRun(r => r + 1)} selected={selectedComponent} onSelect={setSelectedComponent} />
+          <ComponentPreview cfg={cfg} plan={plan} selected={selectedComponent} />
         )}
         <main className={activePage === 'player'
           ? 'flex min-w-0 flex-1 flex-col items-end justify-center gap-3 p-6'
