@@ -10,7 +10,7 @@ let lastSoundTime = 0
 
 function unlockAudio() {
   if (!audioContext) audioContext = new AudioContext()
-  if (audioContext.state === 'suspended') void audioContext.resume()
+  return audioContext.state === 'suspended' ? audioContext.resume() : Promise.resolve()
 }
 
 function playMechanicalTick() {
@@ -104,7 +104,7 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
 
   useEffect(() => {
     const unlock = () => {
-      unlockAudio()
+      void unlockAudio()
       window.removeEventListener('pointerdown', unlock)
       window.removeEventListener('keydown', unlock)
     }
@@ -201,7 +201,7 @@ function RollingCounterControls({ cfg, set }: ControlProps) {
       {cfg.stops.map((_, i) => field(`Stop ${i + 1}`, i + 1))}
       {field('End', cfg.stops.length + 1)}
       <label className="flex items-center gap-2 text-sm text-white/80">
-        <input type="checkbox" className="accent-cyan-400" checked={sound} onChange={e => { soundEnabled = e.target.checked; setSound(e.target.checked) }} />
+        <input type="checkbox" className="accent-cyan-400" checked={sound} onChange={e => { const enabled = e.target.checked; soundEnabled = enabled; setSound(enabled); if (enabled) void unlockAudio().then(() => playMechanicalTick()) }} />
         Mechanical tick sound
       </label>
     </Group>
