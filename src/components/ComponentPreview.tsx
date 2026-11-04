@@ -8,7 +8,7 @@ export function ComponentPreview({ cfg, plan, selected, set }: { cfg: Config; pl
   const [scale, setScale] = useState(0.55)
   const show = Object.fromEntries(Object.keys(cfg.show).map(key => [key, selected !== 'global' && key === selected])) as Config['show']
   return (
-    <aside className="flex w-[300px] shrink-0 flex-col gap-4 overflow-y-auto border-r border-white/10 bg-neutral-950 p-4">
+    <aside className="flex w-[720px] shrink-0 flex-col gap-4 overflow-y-auto border-r border-white/10 bg-neutral-950 p-4">
       <header>
         <h2 className="text-base font-semibold text-white">Controls and Preview</h2>
         <p className="mt-1 text-xs text-white/50">{selected === 'global' ? 'Global' : selected}</p>

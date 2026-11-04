@@ -111,7 +111,6 @@ export default function App() {
           )}
         </main>
         {activePage === 'player' && <LegTimes plan={plan} mode={cfg.mode} />}
-        {activePage === 'player' && <LegTimes plan={plan} mode={cfg.mode} />}
       </div>
     </TimelineClock>
   )
