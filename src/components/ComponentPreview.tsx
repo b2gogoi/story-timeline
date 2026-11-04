@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
-import { type ComponentId, type Plan, type Config } from '../lib/timeline'
+import { useEffect, useMemo, useState } from 'react'
+import { type ComponentId, type Config, buildPlan, toDay } from '../lib/timeline'
 import { Story } from './Story'
 import { REGISTRY } from './registry'
 import { GlobalControls } from './GlobalControls'
 import type { ControlProps } from '../lib/timeline'
 
-export function ComponentPreview({ cfg, plan, selected, set }: { cfg: Config; plan: Plan; selected: ComponentId | 'global'; set: ControlProps['set'] }) {
+export function ComponentPreview({ cfg, selected, set }: { cfg: Config; selected: ComponentId | 'global'; set: ControlProps['set'] }) {
   const [scale, setScale] = useState(120)
   const [draftCfg, setDraftCfg] = useState(cfg)
   const [dirty, setDirty] = useState(false)
@@ -24,6 +24,10 @@ export function ComponentPreview({ cfg, plan, selected, set }: { cfg: Config; pl
     setDirty(false)
   }
 
+  const plan = useMemo(
+    () => buildPlan([draftCfg.start, ...draftCfg.stops, draftCfg.end].map(toDay), draftCfg, draftCfg.mapping === 'counter' ? draftCfg.rollingValues : undefined),
+    [draftCfg.start, draftCfg.end, draftCfg.stops, draftCfg.speed, draftCfg.easePower, draftCfg.dwell, draftCfg.loop, draftCfg.mapping, draftCfg.rollingValues],
+  )
   const show = Object.fromEntries(Object.keys(cfg.show).map(key => [key, selected !== 'global' && key === selected])) as Config['show']
   return (
     <aside className="flex w-[720px] shrink-0 flex-col gap-4 overflow-y-auto border-r border-white/10 bg-neutral-950 p-4">
