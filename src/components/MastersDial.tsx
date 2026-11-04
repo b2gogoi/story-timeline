@@ -1,15 +1,17 @@
 import { useRef, type CSSProperties } from 'react'
 import { useFrame } from '../lib/clock'
 import { type ControlProps, type ViewProps, type Config, toDay } from '../lib/timeline'
-// import { Row, input } from './ui'
+import { Row, input } from './ui'
 
-/* export function DialControls({ cfg, set }: ControlProps) {
+export function DialControls({ cfg, set }: ControlProps) {
   return (
     <Row label="Date of birth">
       <input type="date" className={input} value={cfg.dob} onChange={e => e.target.value && set({ dob: e.target.value })} />
     </Row>
   )
-} */
+}
+
+
 
 const START = 25          // first category: 25–29
 const STEP = 5            // years per block
