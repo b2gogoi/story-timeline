@@ -18,9 +18,9 @@ export function ComponentPreview({ cfg, plan, selected, set }: { cfg: Config; pl
         const ComponentControls = REGISTRY.find(item => item.id === selected)?.Controls
         return ComponentControls ? <div className="max-h-[45%] overflow-y-auto border-b border-white/10 pb-3"><ComponentControls cfg={cfg} set={set} /></div> : null
       })()}
-      <div className="flex min-h-0 flex-1 items-end justify-center overflow-hidden rounded-lg border border-white/10 bg-black/30 pb-4">
+      <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-black/30 pb-4">
         <div className="h-[320px] origin-bottom" >
-          <Story cfg={{ ...cfg, show }} plan={plan} previewComponent={selected === 'global' ? undefined : selected} previewScale={scale / 100} />
+          <Story cfg={{ ...cfg, show }} plan={plan} previewComponent={selected === 'global' ? undefined : selected} previewScale={1} />
         </div>
       </div>
       <label className="text-xs text-white/60">Component size <span className="float-right font-mono text-white/80">{scale}%</span>
