@@ -12,6 +12,7 @@ type Api = {
   prev: () => void
 }
 const Ctx = createContext<Api>(null!)
+const START_PAUSE_SECONDS = 2
 
 type Props = { plan: Plan; playing: boolean; mode: 'auto' | 'manual'; children: ReactNode }
 
@@ -19,6 +20,7 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
   const listeners = useRef(new Set<Listener>())
   const stopListeners = useRef(new Set<(i: number) => void>())
   const clock = useRef(0)                       // auto-mode plan time
+  const startPause = useRef(START_PAUSE_SECONDS)
   const live = useRef({ plan, playing, mode })
   live.current = { plan, playing, mode }
   const man = useRef({ index: 0, moving: false, from: 0, to: 0, t: 0, dur: 0, power: 3 })
@@ -39,7 +41,7 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
     setIndex(i)
   }
   const step = (d: 1 | -1) => {
-    if (live.current.mode !== 'manual') return
+    if (live.current.mode !== 'manual' || startPause.current > 0) return
     const i = man.current.index + d
     if (i < 0 || i > live.current.plan.points.length - 1) return
     goTo(i, lastDay.current)   // retargets from wherever it is, so fast clicks chain smoothly
@@ -68,16 +70,28 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
 
       let day: number
       if (mode === 'manual') {
-        if (m.index > lastIdx) setIndex(lastIdx)
-        if (m.moving) {
-          m.t += dt
-          const p = Math.min(1, m.t / m.dur)
-          day = m.from + (m.to - m.from) * easeOut(p, m.power)
-          if (p >= 1) { m.moving = false; day = m.to }
-        } else day = plan.points[m.index]
+        if (startPause.current > 0) {
+          startPause.current = Math.max(0, startPause.current - dt)
+          day = plan.points[0]
+        } else {
+          if (m.index > lastIdx) setIndex(lastIdx)
+          if (m.moving) {
+            m.t += dt
+            const p = Math.min(1, m.t / m.dur)
+            day = m.from + (m.to - m.from) * easeOut(p, m.power)
+            if (p >= 1) { m.moving = false; day = m.to }
+          } else day = plan.points[m.index]
+        }
       } else {
-        if (playing) clock.current += dt
-        day = positionAt(plan, clock.current)
+        if (playing && startPause.current > 0) startPause.current = Math.max(0, startPause.current - dt)
+        else if (playing) clock.current += dt
+
+        if (startPause.current > 0) day = plan.points[0]
+        else if (plan.loop) {
+          const cycle = plan.total + START_PAUSE_SECONDS
+          const phase = clock.current % Math.max(cycle, 0.001)
+          day = phase >= plan.total ? plan.points[0] : positionAt(plan, phase)
+        } else day = positionAt(plan, clock.current)
       }
 
       lastDay.current = day
