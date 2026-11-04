@@ -14,11 +14,11 @@ import { type ComponentId } from './lib/timeline'
 
 const initial: Config = {
   bgFrom: '#312145', bgTo: '#312145', bgSplit: 25, fontColor: '#e6f4f7',
-  speed: 18, easePower: 2, dwell: 1, direction: 'up', monthsVisible: 36, loop: false,
+  speed: 18, easePower: 2, dwell: 1, direction: 'up', monthsVisible: 36, loop: true,
   start: '2019-10-12', end: '2026-10-06',
   stops: ['2019-12-07', '2021-11-28', '2022-11-26', '2024-10-05', '2025-11-23', '2026-08-29'],
   dob: '1982-09-24',
-  mode: 'manual',
+  mode: 'auto',
   mapping: 'dates',
   raceDistance: 50,
   raceStroke: 'FLY',
