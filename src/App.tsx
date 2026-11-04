@@ -6,15 +6,16 @@ import { Story } from './components/Story'
 import { TimelineClock } from './lib/clock'
 import { type Config, buildPlan, toDay } from './lib/timeline'
 import { StepControls } from './components/StepControls'
+import { LegTimes } from './components/LegTimes'
 
 const initial: Config = {
   bgFrom: '#414949', bgTo: '#0e1010', bgSplit: 25, fontColor: '#e6f4f7',
-  speed: 14, easePower: 3, dwell: 1, direction: 'up', monthsVisible: 60, loop: true,
+  speed: 18, easePower: 2, dwell: 1, direction: 'up', monthsVisible: 36, loop: false,
   start: '2019-10-12', end: '2026-10-06',
   stops: ['2019-12-07', '2021-11-28', '2022-11-26', '2024-10-05', '2025-11-23', '2026-08-29'],
   dob: '1982-09-24',
   mode: 'manual',
-  mapping: 'counter',
+  mapping: 'dates',
   raceDistance: 50,
   raceStroke: 'FLY',
   rollingValues: [4663, 4242, 4072, 4029, 4019, 3760, 3721, 3660],
@@ -79,16 +80,17 @@ export default function App() {
       <div className="flex h-screen bg-neutral-900 font-sans">
         <Controls cfg={cfg} set={set} playing={playing} onToggle={() => setPlaying(p => !p)} onRestart={() => setRun(r => r + 1)} />
         <main className="flex min-w-0 flex-1 flex-col items-center justify-center gap-3 p-6">
-  <div className="h-[calc(100vh-7rem)] max-h-[960px] overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
-    <Story cfg={cfg} plan={plan} />
-  </div>
-  <div className="flex items-center gap-4">
-    {cfg.mode === 'manual'
-      ? <StepControls count={cfg.stops.length + 2} />
-      : <p className="text-xs text-white/40">Story format 9:16 (1080 × 1920)</p>}
-    <button className={btn} onClick={toggleFull}>{full ? 'Exit full screen' : 'Full screen'}</button>
-  </div>
-</main>
+          <div className="h-[calc(100vh-7rem)] max-h-[960px] overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
+            <Story cfg={cfg} plan={plan} />
+          </div>
+          <div className="flex items-center gap-4">
+            {cfg.mode === 'manual'
+              ? <StepControls count={cfg.stops.length + 2} />
+              : <p className="text-xs text-white/40">Story format 9:16 (1080 × 1920)</p>}
+            <button className={btn} onClick={toggleFull}>{full ? 'Exit full screen' : 'Full screen'}</button>
+          </div>
+        </main>
+        <LegTimes plan={plan} mode={cfg.mode} />
       </div>
     </TimelineClock>
   )
