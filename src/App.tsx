@@ -13,7 +13,7 @@ import { ComponentPreview } from './components/ComponentPreview'
 import { type ComponentId } from './lib/timeline'
 
 const initial: Config = {
-  bgFrom: '#414949', bgTo: '#0e1010', bgSplit: 25, fontColor: '#e6f4f7',
+  bgFrom: '#312145', bgTo: '#312145', bgSplit: 25, fontColor: '#e6f4f7',
   speed: 18, easePower: 2, dwell: 1, direction: 'up', monthsVisible: 36, loop: false,
   start: '2019-10-12', end: '2026-10-06',
   stops: ['2019-12-07', '2021-11-28', '2022-11-26', '2024-10-05', '2025-11-23', '2026-08-29'],

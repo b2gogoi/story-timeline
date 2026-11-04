@@ -8,7 +8,7 @@ export function RaceStripView({ cfg }: ViewProps) {
   return (
  
     <div
-      className="pointer-events-none absolute inset-x-0 top-[15cqw] z-10 flex h-[9cqw] items-center justify-center bg-[#3c6064]/60 font-sans text-[3.9cqw] font-medium uppercase tracking-[0.06em] text-white"
+      className="pointer-events-none absolute inset-x-0 top-[15cqw] z-10 flex h-[9cqw] items-center justify-center bg-[#3c6064]/60 font-sans text-[3.9cqw] font-medium uppercase tracking-[0.06em] text-white opacity-30 shadow-[0_0.6cqw_1.6cqw_rgba(0,0,0,0.35)]"
       aria-label="Race strip"
     >
       <span className="whitespace-nowrap">

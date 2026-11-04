@@ -9,7 +9,7 @@ export function RulerView({ cfg, plan }: ViewProps) {
   const N = cfg.monthsVisible * DAYS_PER_MONTH
   const dir = cfg.direction === 'up' ? 1 : -1
 
-  const ANCHOR = '58cqw' // where "now" sits, measured from the top of the frame
+  const ANCHOR = '80cqw' // where "now" sits, measured from the top of the frame
 
   const lo = Math.floor(Math.min(...plan.points)) - Math.ceil(N / 2) - 40
   const hi = Math.ceil(Math.max(...plan.points)) + Math.ceil(N / 2) + 40
@@ -48,8 +48,8 @@ export function RulerView({ cfg, plan }: ViewProps) {
       <div ref={layer} className="absolute right-0 w-[10cqw] will-change-transform" style={{ top: ANCHOR, height: `${(count * 100) / N}%` }}>
         {ticks}
       </div>
-      <div className="absolute inset-x-0 flex -translate-y-1/2 items-center pl-[52cqw] pr-0" style={{ top: ANCHOR }}>
-        <span ref={label} className="mr-[2.4cqw] whitespace-nowrap font-mono text-[2.6cqw] tracking-[0.22em]" />
+      <div className="absolute inset-x-0 flex -translate-y-1/2 items-center pl-[52cqw] pr-0 opacity-40" style={{ top: ANCHOR }}>
+        <span ref={label} className="mr-[2.4cqw] whitespace-nowrap font-mono text-[2.6cqw] tracking-[0.22em]" style={{ background: 'black' }}/>
         <span className="h-px flex-1" style={{ background: 'currentColor' }} />
       </div>
     </>
