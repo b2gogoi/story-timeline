@@ -1,4 +1,6 @@
-export type ComponentId = 'ruler' | 'counter' | 'dial' | 'rolling' | 'images'
+export type ComponentId = 'ruler' | 'counter' | 'dial' | 'race' | 'rolling' | 'images'
+
+// inside Config:
 
 export type ViewProps = { cfg: Config; plan: Plan }
 export type ControlProps = { cfg: Config; set: (p: Partial<Config>) => void }
@@ -35,12 +37,14 @@ export type Config = {
   storyImages: string[] // image URLs at start, each stop, and end
   storyCities: string[] // city labels at start, each stop, and end
   storyEvents: string[] // event names at start, each stop, and end
+  raceDistance: number  // race strip: distance in metres
+  raceStroke: string    // race strip: stroke label, e.g. FLY
 }
 
 type Seg = { from: number; to: number; move: number; hold: number; power: number }
 export const easeOut = (p: number, n: number) => 1 - Math.pow(1 - p, n)
 export const moveDuration = (dist: number, speed: number, power: number) =>
-  Math.max(0.35, (dist * power) / (speed * DAYS_PER_MONTH))
+  Math.max(1.0, (dist * power) / (speed * DAYS_PER_MONTH))
 
 /** The final stop is a slow, dramatic finish. */
 const FINALE_POWER = 7      // braking sharpness of the last leg (higher = longer crawl)

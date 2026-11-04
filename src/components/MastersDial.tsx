@@ -49,11 +49,12 @@ export function MastersDial({ cfg }: { cfg: Config }) {
   })
 
   return ( 
-  <div className="absolute inset-x-[5cqw] top-[5cqw] z-10 [container-type:inline-size]">
+  // <div className="absolute inset-x-[5cqw] top-[5cqw] z-10 [container-type:inline-size]">
+  <div className="absolute inset-x-[5cqw] top-[3cqw] z-10 [container-type:inline-size]">
     {/* <div className="rounded-xl p-[1cqw]" style={{ background: 'linear-gradient(#f4f6f8, #9aa2ab)', boxShadow: '0 6px 16px rgb(0 0 0 / .45)' }}> */}
     <div
         ref={root}
-        className="relative h-[12cqw] overflow-hidden rounded-lg ring-1 ring-white/15"
+        className="relative h-[10cqw] overflow-hidden rounded-lg ring-1 ring-white/15"
         style={{
           color:  '#1d2530', //cfg.fontColor,
         //   background: 'rgb(0 0 0 / 0.35)',

@@ -15,6 +15,8 @@ const initial: Config = {
   dob: '1982-09-24',
   mode: 'manual',
   mapping: 'counter',
+  raceDistance: 50,
+  raceStroke: 'FLY',
   rollingValues: [4663, 4242, 4072, 4029, 4019, 3760, 3721, 3660],
   storyImages: [
     'https://ik.imagekit.io/natad0m3/Bhaskar_VAC_2019.jpg',
@@ -38,7 +40,7 @@ const initial: Config = {
     '27th State Masters Championship', 
     '2nd Asian Masters'
   ],
-  show: { ruler: true, counter: true, dial: true, rolling: true, images: true },
+  show: { ruler: true, counter: false, dial: true, race: true, rolling: true, images: true },
 }
 
 export default function App() {

@@ -5,6 +5,7 @@ import { CounterView } from './Counter'
 import { MastersDial } from './MastersDial'
 import { RollingCounter, RollingCounterControls } from './RollingCounter'
 import { StoryImages, StoryImagesControls } from './StoryImages'
+import { RaceStripView, RaceStripControls } from './RaceStrip'
 
 export type Entry = {
   id: ComponentId
@@ -19,5 +20,6 @@ export const REGISTRY: Entry[] = [
   { id: 'ruler', label: 'Timeline ruler', View: RulerView, Controls: RulerControls },
   { id: 'counter', label: 'Units counter', View: CounterView },
   { id: 'dial', label: 'Masters dial', View: MastersDial },
+  { id: 'race', label: 'Race strip', View: RaceStripView, Controls: RaceStripControls },
   { id: 'rolling', label: 'Rolling counter', View: RollingCounter, Controls: RollingCounterControls },
 ]
