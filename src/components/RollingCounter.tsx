@@ -101,7 +101,7 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
   const ribbons = useRef<Array<HTMLSpanElement | null>>([])
   const previousInteger = useRef<number | null>(null)
   const finaleDone = useRef(false)
-  const startupTicksThrough = useRef(-1)
+  const startupTicksThrough = useRef(0)
   const previousStartProgress = useRef(1)
 
   useEffect(() => {
@@ -119,26 +119,22 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
   }, [])
 
   useFrame(({ day, startProgress }) => {
-    const startValue = cfg.rollingValues[0] ?? 0
+    const startValue = Math.max(0, Math.min(9999, Math.floor(cfg.rollingValues[0] ?? 0)))
+    const targetDigits = [0, 1, 2, 3].map(index => Math.floor(startValue / 10 ** (3 - index)) % 10)
+    const totalStartupRotations = targetDigits.reduce((sum, digit) => sum + digit, 0)
     const value = Math.max(0, Math.min(9999, startProgress < 1 ? startValue : valueAt(day, plan.points, cfg.rollingValues)))
     const integer = Math.floor(value)
     if (startProgress < 1) {
-      if (previousStartProgress.current >= 1) startupTicksThrough.current = -1
-      const elapsed = startProgress * START_PAUSE_SECONDS
-      const activeDigit = Math.min(3, Math.floor(elapsed / 2))
-      if (activeDigit > startupTicksThrough.current) {
-        for (let i = startupTicksThrough.current + 1; i <= activeDigit; i++) {
-          const digitIndex = 3 - i
-          const place = 10 ** (3 - digitIndex)
-          if (Math.floor(startValue / place) % 10 !== 0) playMechanicalTick()
-        }
-        startupTicksThrough.current = activeDigit
-      }
+      if (previousStartProgress.current >= 1) startupTicksThrough.current = 0
+      const rotationsProgress = startProgress * totalStartupRotations
+      const completedRotations = Math.min(totalStartupRotations, Math.floor(rotationsProgress + 1e-7))
+      for (let tick = startupTicksThrough.current + 1; tick <= completedRotations; tick++) playMechanicalTick()
+      startupTicksThrough.current = completedRotations
       previousInteger.current = null
     } else {
       if (previousInteger.current !== null && integer !== previousInteger.current) playMechanicalTick()
       previousInteger.current = integer
-      startupTicksThrough.current = 3
+      startupTicksThrough.current = totalStartupRotations
     }
     previousStartProgress.current = startProgress
     const end = plan.points[plan.points.length - 1]
@@ -146,17 +142,19 @@ export function RollingCounter({ cfg, plan }: ViewProps) {
     if (atEnd && !finaleDone.current) playFinalClunk()
     finaleDone.current = atEnd
 
-    // The units wheel turns continuously; each higher wheel engages only as
-    // the wheel to its right passes through 9 into 0. Startup sets wheels right to left.
+    // The units wheel turns continuously during playback; higher wheels engage as
+    // the wheel to their right passes through 9 into 0. Startup advances one step at a time.
     for (let index = 3; index >= 0; index--) {
       const place = 10 ** (3 - index)
       let digitWithFraction: number
       if (startProgress < 1) {
-        const destination = Math.floor(startValue / place) % 10
-        const elapsed = startProgress * START_PAUSE_SECONDS
-        const wheelProgress = Math.max(0, Math.min(1, elapsed / 2 - (3 - index)))
-        const easedProgress = 1 - (1 - wheelProgress) ** 3
-        digitWithFraction = destination * easedProgress
+        const destination = targetDigits[index]
+        const rotationsBefore = targetDigits.slice(index + 1).reduce((sum, digit) => sum + digit, 0)
+        const rotationsOnWheel = Math.max(0, Math.min(destination, startProgress * totalStartupRotations - rotationsBefore))
+        const completedOnWheel = Math.floor(rotationsOnWheel)
+        const stepProgress = rotationsOnWheel - completedOnWheel
+        const easedStep = 1 - (1 - stepProgress) ** 3
+        digitWithFraction = rotationsOnWheel >= destination ? destination : completedOnWheel + easedStep
       } else if (index === 3) {
         digitWithFraction = value % 10
       } else {
