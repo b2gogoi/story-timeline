@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { type Plan, easeOut, easePowerForStop, moveDurationForStop, positionAt, valueAt } from './timeline'
 
-export type Frame = { day: number; progress: number; units: number; range: number; startProgress: number }
+export type Frame = { day: number; progress: number; units: number; range: number; startProgress: number; time: number }
 
 type Listener = (f: Frame) => void
 type Api = {
@@ -10,13 +10,53 @@ type Api = {
   getStop: () => number
   next: () => void
   prev: () => void
+  seek: (timeSeconds: number) => void   // export mode: draw the frame at an exact time
 }
 const Ctx = createContext<Api>(null!)
 export const START_PAUSE_SECONDS = 2.4
 
-type Props = { plan: Plan; playing: boolean; mode: 'auto' | 'manual'; children: ReactNode }
+/** Progress, units and range for a given day (shared by the live loop and the video export). */
+export function frameFromDay(plan: Plan, day: number, startProgress: number, time: number): Frame {
+  const lastIdx = plan.points.length - 1
+  const a = plan.points[0], b = plan.points[lastIdx]
+  let progress: number, units: number, range: number
+  if (plan.values) {
+    const v0 = plan.values[0] ?? 0
+    range = Math.abs((plan.values[lastIdx] ?? 0) - v0)
+    units = Math.abs(valueAt(day, plan.points, plan.values) - v0)
+    progress = range ? units / range : 0
+  } else {
+    range = 1000
+    progress = b === a ? 0 : (day - a) / (b - a)
+    units = progress * 1000
+  }
+  return { day, progress, units, range, startProgress, time }
+}
 
-export function TimelineClock({ plan, playing, mode, children }: Props) {
+/**
+ * The frame at an exact time in auto mode: the startup pause, then one pass through the plan.
+ * A video export of one play loop is START_PAUSE_SECONDS + plan.total long.
+ */
+export function frameAtTime(plan: Plan, t: number): Frame {
+  let day = plan.points[0]
+  let startProgress = 1
+  if (t < START_PAUSE_SECONDS) {
+    startProgress = Math.max(0, t) / START_PAUSE_SECONDS
+  } else {
+    const clockTime = t - START_PAUSE_SECONDS
+    if (plan.loop) {
+      const cycle = plan.total + START_PAUSE_SECONDS
+      const phase = clockTime % Math.max(cycle, 0.001)
+      if (phase >= plan.total) startProgress = Math.min(1, (phase - plan.total) / START_PAUSE_SECONDS)
+      else day = positionAt(plan, phase)
+    } else day = positionAt(plan, clockTime)
+  }
+  return frameFromDay(plan, day, startProgress, t)
+}
+
+type Props = { plan: Plan; playing: boolean; mode: 'auto' | 'manual'; external?: boolean; children: ReactNode }
+
+export function TimelineClock({ plan, playing, mode, external = false, children }: Props) {
   const listeners = useRef(new Set<Listener>())
   const stopListeners = useRef(new Set<(i: number) => void>())
   const clock = useRef(0)                       // auto-mode plan time
@@ -48,6 +88,7 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
   }
 
   useEffect(() => {
+    if (external) return // export mode: time is driven from outside through seek()
     let raf = 0, last = performance.now()
     const loop = (now: number) => {
       const dt = Math.min((now - last) / 1000, 0.1)
@@ -102,19 +143,7 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
       }
 
       lastDay.current = day
-      const a = plan.points[0], b = plan.points[lastIdx]
-      let progress: number, units: number, range: number
-      if (plan.values) {
-        const v0 = plan.values[0] ?? 0
-        range = Math.abs((plan.values[lastIdx] ?? 0) - v0)
-        units = Math.abs(valueAt(day, plan.points, plan.values) - v0)
-        progress = range ? units / range : 0
-      } else {
-        range = 1000
-        progress = b === a ? 0 : (day - a) / (b - a)
-        units = progress * 1000
-      }
-      const f = { day, progress, units, range, startProgress }
+      const f = frameFromDay(plan, day, startProgress, now / 1000)
       listeners.current.forEach(fn => fn(f))
       raf = requestAnimationFrame(loop)
     }
@@ -139,6 +168,11 @@ export function TimelineClock({ plan, playing, mode, children }: Props) {
     getStop: () => man.current.index,
     next: () => step(1),
     prev: () => step(-1),
+    seek: (t: number) => {
+      const f = frameAtTime(live.current.plan, t)
+      lastDay.current = f.day
+      listeners.current.forEach(fn => fn(f))
+    },
   }), [])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>

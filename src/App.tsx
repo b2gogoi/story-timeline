@@ -12,7 +12,7 @@ import { PageSidebar, type AppPage } from './components/PageSidebar'
 import { ComponentPreview } from './components/ComponentPreview'
 import { type ComponentId } from './lib/timeline'
 
-const initial: Config = {
+export const initial: Config = {
   bgFrom: '#312145', bgTo: '#012837', bgSplit: 25, fontColor: '#e6f4f7',
   speed: 16, easePower: 1.8, dwell: 1.5, direction: 'up', monthsVisible: 36, loop: true,
   start: '2019-10-12', end: '2026-10-06',
@@ -104,6 +104,7 @@ export default function App() {
                   ? <StepControls count={cfg.stops.length + 2} />
                   : <p className="text-xs text-white/40">Story format 9:16 (1080 × 1920)</p>}
                 <button className={btn} onClick={toggleFull}>{full ? 'Exit full screen' : 'Full screen'}</button>
+                <button className={btn} onClick={() => void navigator.clipboard.writeText(JSON.stringify(cfg, null, 2))} title="Copy the current settings as JSON, for the video export script">Copy config</button>
               </div>
             </>
           ) : (

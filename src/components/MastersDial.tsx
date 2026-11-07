@@ -29,12 +29,12 @@ export function MastersDial({ cfg }: { cfg: Config }) {
   const dob = toDay(cfg.dob)
   const s = useRef({ v: 0, from: 0, to: 0, t0: 0, init: false, written: NaN })
 
-  useFrame(({ day }) => {
+  useFrame(({ day, time }) => {
     const age = (day - dob) / 365.25
     const blocks = Math.min(COUNT, Math.max(0, (age - START) / STEP)) // continuous
     const target = Math.min(COUNT - 1, Math.floor(blocks))            // current block
     const st = s.current
-    const now = performance.now()
+    const now = time * 1000 // frame time (equals performance.now() live, exact in video export)
 
     if (!st.init) { st.v = st.from = st.to = target; st.init = true }
     else if (target !== st.to) {
