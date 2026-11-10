@@ -57,6 +57,16 @@ export default function App() {
   const [activePage, setActivePage] = useState<AppPage>('player')
   const [selectedComponent, setSelectedComponent] = useState<ComponentId | 'global'>('global')
 
+  const exportConfig = () => {
+    const json = JSON.stringify(cfg, null, 2)
+    const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'export.config.json'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   const plan = useMemo(
     () => buildPlan([cfg.start, ...cfg.stops, cfg.end].map(toDay), cfg, cfg.mapping === 'counter' ? cfg.rollingValues : undefined),
     [cfg.start, cfg.end, cfg.stops, cfg.speed, cfg.easePower, cfg.dwell, cfg.loop, cfg.mapping, cfg.rollingValues], // eslint-disable-line react-hooks/exhaustive-deps
@@ -87,7 +97,7 @@ export default function App() {
         <PageSidebar activePage={activePage} onNavigate={setActivePage} />
         {activePage === 'player' && (
           <>
-            <Controls cfg={cfg} set={set} playing={playing} onToggle={() => setPlaying(p => !p)} onRestart={() => setRun(r => r + 1)} selected={selectedComponent} onSelect={setSelectedComponent} />
+            <Controls cfg={cfg} set={set} playing={playing} onToggle={() => setPlaying(p => !p)} onRestart={() => setRun(r => r + 1)} onExport={exportConfig} selected={selectedComponent} onSelect={setSelectedComponent} />
             <ComponentPreview cfg={cfg} selected={selectedComponent} set={set} />
           </>
         )}

@@ -6,11 +6,11 @@ import { Color, Group, Row, Section, Slider, btn, input } from './ui'
 
 type Props = {
   cfg: Config; set: (p: Partial<Config>) => void
-  playing: boolean; onToggle: () => void; onRestart: () => void
+  playing: boolean; onToggle: () => void; onRestart: () => void; onExport: () => void
   selected: ComponentId | 'global'; onSelect: (id: ComponentId | 'global') => void
 }
 
-export function Controls({ cfg, set, playing, onToggle, onRestart, selected, onSelect }: Props) {
+export function Controls({ cfg, set, playing, onToggle, onRestart, onExport, selected, onSelect }: Props) {
   const [evenN, setEvenN] = useState(4)
   const days = Math.abs(toDay(cfg.end) - toDay(cfg.start))
   const last = cfg.stops.length + 1
@@ -72,6 +72,7 @@ export function Controls({ cfg, set, playing, onToggle, onRestart, selected, onS
         <h1 className="text-base font-semibold text-white">Story timeline</h1>
         <div className="flex gap-2">
           <button className={btn} onClick={onToggle} disabled={cfg.mode === 'manual'}>{playing ? 'Pause' : 'Play'}</button>
+          <button className={btn} onClick={onExport} title="Download the current settings as JSON for the video export script">Export</button>
           <button className={btn} onClick={onRestart}>Restart</button>
         </div>
       </div>
